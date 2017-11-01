@@ -22,7 +22,7 @@ class Trainer():
             """
             weights = []
             for input in self.network.inputs:
-                weights += [np.random.uniform(self.config.random_range) for feature in input]
+                weights += [[np.random.uniform(*self.config.random_range) for feature in input]]
             return weights
 
         self.config = configuration
@@ -33,26 +33,40 @@ class Trainer():
 
     @timer("Training phase: ")
     def train(self):
-        degree_of_neighbourhood = self.config.decay_sigma
+        # Initial values. Will be adjusted during training.
+        sigma = self.config.decay_sigma
         learning_rate = self.config.learning_rate
+
+        # Running random cases for a number of epochs:
         for epoch in range(1, self.config.epochs):
-            # TODO: Maybe refactor. Network.random_case if the case variable is only used here (random.choice)
-            case = random.randint(0, self.config.output_nodes-1)
-            input = self.network.inputs[case]
-            for i in range(len(input)):
-                minimum, index = reduce_min(input[i], i, self.weights)
+            for case in range(len(self.config.casemanager.dataset)):
+                input = self.network.random_input()
 
-                # Adjusting the neighbourhood:
-                neighbourhood = (int(-degree_of_neighbourhood / 2), int(degree_of_neighbourhood / 2) + 1)
-                weight = self.weights[index][i]
-                for degree in range(*neighbourhood):
-                    neighbour = index + degree
-                    adjusted_weight = weight + ( learning_rate * degree * diff(weight, input) ) # TODO: Er dette vektor eller enkelt input?
-                    self.weights[neighbour][i] = adjusted_weight
+                # Running the self organizing map algorithm:
+                learning_rate, sigma = self.organize_map(epoch, input, sigma, learning_rate)
 
-                # Adjusting parameters:
-                degree_of_neighbourhood = linear_decay(epoch, degree_of_neighbourhood, self.config.decay_lambda)
-                learning_rate = linear_learning_rate_adjust(epoch)
+            # Displaying visuals if system is configured to do so.
+            if self.config.visuals and epoch % self.config.visuals_refresh_rate == 0:
+                print(str(self.weights) + "\n\n")
+
+    def organize_map(self, epoch, input, degree_of_neighbourhood, learning_rate):
+        for i in range(len(input)):
+            # Finding the
+            minimum, index = reduce_min(input[i], i, self.weights)
+
+            # Adjusting the neighbourhood:
+            neighbourhood = (int(-degree_of_neighbourhood / 2), int(degree_of_neighbourhood / 2))
+            weight = self.weights[index][i]
+            for degree in range(*neighbourhood):
+                neighbour = index + degree if index + degree < self.config.nodes else abs(index - (index + degree)) - 1
+                adjusted_weight = weight + (learning_rate * degree * diff(weight, input))
+                self.weights[neighbour][i] = adjusted_weight
+
+            # Adjusting parameters:
+            degree_of_neighbourhood = linear_decay(epoch, degree_of_neighbourhood, self.config.decay_lambda)
+            learning_rate = linear_learning_rate_adjust(epoch)
+
+        return learning_rate, degree_of_neighbourhood
 
 # Decay functions
 linear_decay = lambda t, o, l: o + l * t
@@ -64,6 +78,7 @@ inverse_of_time_learning_rate_adjust = lambda t, T : 1-(t/T)
 power_series_learning_rate_adjust = lambda t, T : np.math.pow(0.005, (t/T))
 
 def diff(number, vector):
+    # TODO: Er dette vektor eller enkelt input?
     return sum( v - number for v in vector)
     # return vector - number
 

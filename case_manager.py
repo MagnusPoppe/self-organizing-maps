@@ -14,12 +14,12 @@ class CaseManager():
         dataset = []
         with open(file, "r") as f:
             cities = f.readline()
-            config.output_nodes = int(cities.split(":")[1])
+            config.nodes = int(cities.split(":")[1])
             heading = f.readline().strip("\n")
             if heading == "NODE_COORD_SECTION":
 
                 # Looping through all cities.
-                for i in range(config.output_nodes):
+                for i in range(config.nodes):
                     # Reading line, and removing line ending. Each line is formatted like: 1 42.39 59.102
                     line = f.readline().strip("\n").split(" ")
                     dataset += [[int(line[0]), float(line[1]), float(line[2])]]
@@ -29,17 +29,21 @@ class CaseManager():
                     raise Exception("Failed to interpret dataset...")
 
         if config.normalize:
-            highx = highy = -sys.maxsize
-            for data in dataset:
-                i, x,y = data
-                highx = x if x > highx else highx
-                highy = y if y > highy else highy
+            dataset = self.normalize(dataset, config.normalize_feature_independant)
+        return dataset
 
-            if config.normalize_feature_independant:
-                highx = highy = max(highx, highy)
+    def normalize(self, dataset, feature_independant):
+        highx = highy = -sys.maxsize
+        for data in dataset:
+            i, x, y = data
+            highx = x if x > highx else highx
+            highy = y if y > highy else highy
 
-            for data in dataset:
-                data[0] = data[0]/highx
-                data[1] = data[1]/highy
-            self.normalized_by = highx, highy
+        if not feature_independant:
+            highx = highy = max(highx, highy)
+
+        for data in dataset:
+            data[0] = data[0] / highx
+            data[1] = data[1] / highy
+        self.normalized_by = highx, highy
         return dataset
