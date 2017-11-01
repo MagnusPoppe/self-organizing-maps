@@ -1,3 +1,5 @@
+import sys
+
 from node import TSPNode
 
 
@@ -20,10 +22,24 @@ class CaseManager():
                 for i in range(config.output_nodes):
                     # Reading line, and removing line ending. Each line is formatted like: 1 42.39 59.102
                     line = f.readline().strip("\n").split(" ")
-                    dataset += [(int(line[0]), float(line[1]), float(line[2]))]
+                    dataset += [[int(line[0]), float(line[1]), float(line[2])]]
 
 
                 if f.readline().strip("\n") != "EOF":
                     raise Exception("Failed to interpret dataset...")
 
+        if config.normalize:
+            highx = highy = -sys.maxsize
+            for data in dataset:
+                i, x,y = data
+                highx = x if x > highx else highx
+                highy = y if y > highy else highy
+
+            if config.normalize_feature_independant:
+                highx = highy = max(highx, highy)
+
+            for data in dataset:
+                data[0] = data[0]/highx
+                data[1] = data[1]/highy
+            self.normalized_by = highx, highy
         return dataset
