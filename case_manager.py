@@ -43,7 +43,7 @@ class CaseManager():
             highx = highy = max(highx, highy)
 
         for data in dataset:
-            data[0] = data[0] / highx
-            data[1] = data[1] / highy
+            data[1] = data[1] / highx
+            data[2] = data[2] / highy
         self.normalized_by = highx, highy
         return dataset
