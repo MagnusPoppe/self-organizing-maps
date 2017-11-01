@@ -1,12 +1,12 @@
-from case_manager import CaseManager
-from network import Network1D
+from Trainer import Trainer
+from configuration import Configuration
+from decorators import timer
 
 
-class Configuration():
+@timer("Total time: ")
+def run():
+    trainer = Trainer( Configuration("datasets/TSP/1.txt") )
+    trainer.train()
 
-    def __init__(self, file):
-        self.casemanager = CaseManager(file) # type: CaseManager
-        self.random_range = (-1.0, 1.0)
-
-config = Configuration("datasets/TSP/1.txt")
-network = Network1D(config)
+if __name__ == '__main__':
+    run()
