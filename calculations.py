@@ -9,17 +9,16 @@ linear_learning_rate_adjust = lambda t : 1/t
 inverse_of_time_learning_rate_adjust = lambda t, T : 1-(t/T)
 power_series_learning_rate_adjust = lambda t, T : np.math.pow(0.005, (t/T))
 
-euclidian_distance = lambda x, y : np.math.pow((x - y), 2)
+euclidian_distance = lambda x, y : np.power((x - y), 2)
 
-def topological_neighbourhood(winner, weights, sigma):
-    neighbourhood = []
-    for weight in weights:
-        neighbourhood += [np.exp( (-euclidian_distance(weight, winner) / (2*np.math.pow(sigma, 2)) ) )]
-    return neighbourhood
+mean = lambda x: sum(x)/len(x)
 
-def update_weights(weight, learning_rate, input, sigma):
-    if sigma > 0:   return weight + learning_rate * sigma * (input - weight)
-    else:           return weight + learning_rate * (input - weight)
+def topological_neighbourhood(winner, weight, sigma):
+    return np.exp( -np.power(weight - winner, 2) / ( 2 * np.power(sigma, 2) ) )
+
+def weight_delta(weight, learning_rate, input, neighbourhood):
+    if neighbourhood > 0.0:   return weight + learning_rate * neighbourhood * (input - weight)
+    else:                   return weight + learning_rate * (input - weight)
 
 def diff(vector1, vector2):
     return sum([v1 - v2 for v1, v2 in zip(vector1, vector2)])

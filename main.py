@@ -1,6 +1,6 @@
 from Trainer import Trainer
 from configuration import Configuration
-from decorators import timer
+from decorators import timer, instanciate_globals, print_time_averages
 
 
 @timer("Total time: ")
@@ -17,4 +17,6 @@ def run():
             plt.close("all")
 
 if __name__ == '__main__':
+    instanciate_globals()
     run()
+    print_time_averages()

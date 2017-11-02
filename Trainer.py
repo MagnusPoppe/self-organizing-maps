@@ -1,7 +1,7 @@
 import numpy as np
 
 from configuration import Configuration
-from decorators import timer
+from decorators import timer, average_runtime
 from network import Network1D
 import calculations as calc
 
@@ -53,17 +53,14 @@ class Trainer():
                 if self.config.visuals:
                     self.graph.update(actuals=self.weights + [self.weights[0]], targets=self.network.inputs)
 
+    @average_runtime(key="Organize map")
     def organize_map(self, input, case, sigma, learning_rate):
         # Finding the BMU
         distance, i = calc.reduce_min(input, self.weights[case])
 
         # Finding neighbourhood size:
-        # TODO: Neighbourhood function is probably wrong.
-        mod = 1# self.config.nodes * (sigma / 2)
+        neighbourhood = [calc.topological_neighbourhood(input[i], wgt[i], sigma) for wgt in self.weights]
 
         # Adjusting the neighbourhood:
-        for degree in range(int(case - mod), int(case + mod)+1):
-            neighbour = case + degree if case + degree < self.config.nodes else abs(case - (case + degree)) - 1
-            for x in range(len(input)):
-                weight = self.weights[neighbour][x]
-                self.weights[neighbour][x] = calc.update_weights(weight, learning_rate, input[x], sigma)
+        for w in range(len(self.weights)):
+            self.weights[w][i] += calc.weight_delta(self.weights[w][i], learning_rate, input[i], neighbourhood[w])
