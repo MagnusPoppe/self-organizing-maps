@@ -5,8 +5,16 @@ from decorators import timer
 
 @timer("Total time: ")
 def run():
-    trainer = Trainer( Configuration("datasets/TSP/1.txt") )
-    trainer.train()
+    config = Configuration("datasets/TSP/1.txt")
+    trainer = Trainer( config )
+    try:
+        trainer.train()
+    except KeyboardInterrupt as e:
+        print("User cancelled the program.")
+    finally:
+        if config.visuals:
+            import matplotlib.pyplot as plt
+            plt.close("all")
 
 if __name__ == '__main__':
     run()

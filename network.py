@@ -31,4 +31,4 @@ class Network1D():
         if not self.remaining: self.remaining = list(range(0, self.config.nodes-1))
         index = random.choice(self.remaining)
         self.remaining.remove(index)
-        return self.inputs[index]
+        return index, self.inputs[index]

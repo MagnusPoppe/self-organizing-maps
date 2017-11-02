@@ -27,47 +27,41 @@ class Trainer():
         self.weights = initialize()
 
         if self.config.visuals:
+
             from live_graph import LiveGraph
-            self.graph = LiveGraph("Travelling salesman problem", "x", "y", (0,1),(0,1))
+            self.graph = LiveGraph("Travelling salesman problem", "x", "y")
 
     @timer("Training phase: ")
     def train(self):
-        # Initial values. Will be adjusted during training.
-        sigma = self.config.decay_sigma
-        learning_rate = self.config.learning_rate
-
         # Running random cases for a number of epochs:
         for epoch in range(1, self.config.epochs):
-            for case in range(len(self.network.inputs)):
-                input = self.network.random_input()
-
-                # Running the self organizing map algorithm:
-                learning_rate, sigma = self.organize_map(epoch, input, sigma, learning_rate)
-
-            # Displaying visuals if system is configured to do so.
-            if self.config.visuals:
-                self.graph.update(actuals=self.weights, targets=self.network.inputs)
-
-        if self.config.visuals:
-            import matplotlib.pyplot as plt
-            plt.close("all")
-
-    def organize_map(self, epoch, input, degree_of_neighbourhood, learning_rate):
-        for i in range(len(input)):
-            # Finding the BMU
-            minimum, index = reduce_min(input[i], i, self.weights)
-
-            # Adjusting the neighbourhood:
-            neighbourhood = int(-(self.config.nodes * degree_of_neighbourhood/12)), int(self.config.nodes * int(degree_of_neighbourhood/12))
-            weight = self.weights[index][i]
-            for degree in range(*neighbourhood):
-                neighbour = index + degree if index + degree < self.config.nodes else abs(index - (index + degree)) - 1
-                self.weights[neighbour][i] = weight + (learning_rate * degree_of_neighbourhood * diff(weight, input))
 
             # Adjusting parameters:
-            degree_of_neighbourhood = exponential_decay(epoch, self.config.decay_sigma, self.config.decay_lambda)
-            learning_rate = linear_learning_rate_adjust(epoch)
+            learning_rate = linear_learning_rate_adjust(epoch/2)
+            sigma = linear_decay(epoch, self.config.decay_sigma, self.config.decay_lambda)
 
-        return learning_rate, degree_of_neighbourhood
+            for i in range(len(self.network.inputs)):
+                # Getting input for this run.
+                case, input = self.network.random_input()
 
+                # Running the self organizing map algorithm:
+                self.organize_map(input, case, sigma, learning_rate)
 
+            # Displaying visuals if system is configured to do so.
+            if epoch % self.config.visuals_refresh_rate == 0:
+                print("Current state: \n\tSigma: %f \n\tLearning rate: %f\n" %(sigma, learning_rate))
+                if self.config.visuals:
+                    self.graph.update(actuals=self.weights + [self.weights[0]], targets=self.network.inputs)
+
+    def organize_map(self, input, case, sigma, learning_rate):
+        # Finding the BMU
+        distance, i = reduce_min(input, self.weights[case])
+
+        # Finding neighbourhood size: TODO: Neighbourhood function is probably wrong.
+        mod = self.config.nodes * (sigma / 2)
+
+        # Adjusting the neighbourhood:
+        for degree in range(int(case - mod), int(case + mod)+1):
+            neighbour = case + degree if case + degree < self.config.nodes else abs(case - (case + degree)) - 1
+            for x in range(len(input)):
+                self.weights[neighbour][x] = update_weights(self.weights[neighbour][x], learning_rate, input[x], sigma)

@@ -2,13 +2,13 @@ import matplotlib.pyplot as PLT
 
 class LiveGraph():
 
-    def __init__(self, graph_title, x_title="", y_title="", x_range=5, y_range=1):
+    def __init__(self, graph_title, x_title="", y_title="", x_range=None, y_range=None):
         self.figure = PLT.figure()
         self.figure.suptitle(graph_title)
         PLT.xlabel(x_title)
         PLT.ylabel(y_title)
-        PLT.xlim([*x_range])
-        PLT.ylim([*y_range])
+        if x_range: PLT.xlim([*x_range])
+        if y_range: PLT.ylim([*y_range])
         PLT.grid()
         self.actual_graph = None
         self.target_graph = None
