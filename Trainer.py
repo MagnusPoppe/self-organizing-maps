@@ -57,8 +57,9 @@ class Trainer():
         # Finding the BMU
         distance, i = reduce_min(input, self.weights[case])
 
-        # Finding neighbourhood size: TODO: Neighbourhood function is probably wrong.
-        mod = self.config.nodes * (sigma / 2)
+        # Finding neighbourhood size:
+        # TODO: Neighbourhood function is probably wrong.
+        mod = 1# self.config.nodes * (sigma / 2)
 
         # Adjusting the neighbourhood:
         for degree in range(int(case - mod), int(case + mod)+1):

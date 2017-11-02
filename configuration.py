@@ -12,7 +12,7 @@ class Configuration(): # TODO: Make this read and write to file.
         # Network parameters:
         self.random_range                   = (0, 1.0)
         self.epochs                         = 50000
-        self.learning_rate                  = 0.5
+        self.learning_rate                  = 0.000
         self.learning_rate_decay            = -0.0001
         self.nodes                          = 0
         self.features                       = 0

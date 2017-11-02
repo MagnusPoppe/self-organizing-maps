@@ -1,8 +1,7 @@
-
-# Decay functions
 import numpy as np
 
-linear_decay = lambda t, o, l: o + l * t
+# Decay functions
+linear_decay      = lambda t, o, l: o + l * t
 exponential_decay = lambda t, o, l: o * np.exp(- (t / l))
 
 # Learning rate adjustment functions:
