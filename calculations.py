@@ -9,6 +9,14 @@ linear_learning_rate_adjust = lambda t : 1/t
 inverse_of_time_learning_rate_adjust = lambda t, T : 1-(t/T)
 power_series_learning_rate_adjust = lambda t, T : np.math.pow(0.005, (t/T))
 
+euclidian_distance = lambda x, y : np.math.pow((x - y), 2)
+
+def topological_neighbourhood(winner, weights, sigma):
+    neighbourhood = []
+    for weight in weights:
+        neighbourhood += [np.exp( (-euclidian_distance(weight, winner) / (2*np.math.pow(sigma, 2)) ) )]
+    return neighbourhood
+
 def update_weights(weight, learning_rate, input, sigma):
     if sigma > 0:   return weight + learning_rate * sigma * (input - weight)
     else:           return weight + learning_rate * (input - weight)
@@ -21,6 +29,6 @@ def reduce_min(input, weights):
         Formula for euclidian distance in one dimension:
         \sqrt{(x-y)^2} = |x-y|.
     """
-    distance = [np.math.pow((input - weight), 2) for weight, input in zip(weights, input)]
+    distance = [euclidian_distance(input, weight) for weight, input in zip(weights, input)]
     minimum = min(distance)
     return minimum, distance.index(minimum)

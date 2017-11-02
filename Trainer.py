@@ -3,7 +3,7 @@ import numpy as np
 from configuration import Configuration
 from decorators import timer
 from network import Network1D
-from calculations import *
+import calculations as calc
 
 class Trainer():
 
@@ -37,8 +37,8 @@ class Trainer():
         for epoch in range(1, self.config.epochs):
 
             # Adjusting parameters:
-            learning_rate = linear_learning_rate_adjust(epoch/2)
-            sigma = linear_decay(epoch, self.config.decay_sigma, self.config.decay_lambda)
+            learning_rate = calc.linear_learning_rate_adjust(epoch / 2)
+            sigma = calc.linear_decay(epoch, self.config.decay_sigma, self.config.decay_lambda)
 
             for i in range(len(self.network.inputs)):
                 # Getting input for this run.
@@ -55,7 +55,7 @@ class Trainer():
 
     def organize_map(self, input, case, sigma, learning_rate):
         # Finding the BMU
-        distance, i = reduce_min(input, self.weights[case])
+        distance, i = calc.reduce_min(input, self.weights[case])
 
         # Finding neighbourhood size:
         # TODO: Neighbourhood function is probably wrong.
@@ -65,4 +65,5 @@ class Trainer():
         for degree in range(int(case - mod), int(case + mod)+1):
             neighbour = case + degree if case + degree < self.config.nodes else abs(case - (case + degree)) - 1
             for x in range(len(input)):
-                self.weights[neighbour][x] = update_weights(self.weights[neighbour][x], learning_rate, input[x], sigma)
+                weight = self.weights[neighbour][x]
+                self.weights[neighbour][x] = calc.update_weights(weight, learning_rate, input[x], sigma)
