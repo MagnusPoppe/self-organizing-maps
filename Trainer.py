@@ -37,8 +37,9 @@ class Trainer():
         for epoch in range(1, self.config.epochs):
 
             # Adjusting parameters:
-            learning_rate = calc.linear_learning_rate_adjust(epoch / 2)
-            sigma = calc.linear_decay(epoch, self.config.decay_sigma, self.config.decay_lambda)
+            # TODO: FIX LEARNING RATE...
+            learning_rate = calc.exponential_decay(epoch, self.config.learning_rate, self.config.learning_rate_decay)
+            sigma = calc.exponential_decay(epoch, self.config.initial_neighbourhood, self.config.neighbourhood_decay)
 
             for i in range(len(self.network.inputs)):
                 # Getting input for this run.
@@ -53,14 +54,16 @@ class Trainer():
                 if self.config.visuals:
                     self.graph.update(actuals=self.weights + [self.weights[0]], targets=self.network.inputs)
 
-    @average_runtime(key="Organize map")
+    # @average_runtime(key="Organize map")
     def organize_map(self, input, case, sigma, learning_rate):
         # Finding the BMU
-        distance, i = calc.reduce_min(input, self.weights[case])
+        distance, feature = calc.reduce_min(input, self.weights[case])
 
-        # Finding neighbourhood size:
-        neighbourhood = [calc.topological_neighbourhood(input[i], wgt[i], sigma) for wgt in self.weights]
-
+        # Finding neighbourhood size TODO: Kan denne flyttes inn i løkken under?:
         # Adjusting the neighbourhood:
-        for w in range(len(self.weights)):
-            self.weights[w][i] += calc.weight_delta(self.weights[w][i], learning_rate, input[i], neighbourhood[w])
+        for wgt in range(len(self.weights)):
+            x = abs(wgt-case)
+            neighbourhood = calc.topological_neighbourhood(x, sigma)
+            if neighbourhood > 0:
+                delta = calc.weight_delta(self.weights[wgt][feature], learning_rate, input[feature], neighbourhood)
+                self.weights[wgt][feature] = delta
