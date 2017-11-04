@@ -3,7 +3,7 @@ import matplotlib.pyplot as PLT
 class LiveGraph():
 
     def __init__(self, graph_title, x_title="", y_title="", x_range=None, y_range=None):
-        self.figure = PLT.figure()
+        self.figure = PLT.figure(figsize=(15, 10), dpi=100)
         self.figure.suptitle(graph_title)
         PLT.xlabel(x_title)
         PLT.ylabel(y_title)

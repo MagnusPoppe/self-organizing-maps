@@ -30,5 +30,5 @@ class Network1D():
     def random_input(self):
         if not self.remaining: self.remaining = list(range(0, self.config.nodes-1))
         index = random.choice(self.remaining)
-        self.remaining.remove(index)
+        # self.remaining.remove(index)
         return index, self.inputs[index]
