@@ -27,3 +27,4 @@ In this stage, the learning rate and neighbourhood size is adjusted. They both h
 results from the network.
 
 *Steps 2-4 are repeated a set number of times.*
+

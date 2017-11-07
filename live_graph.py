@@ -1,9 +1,12 @@
 import matplotlib.pyplot as PLT
 
+from decorators import timer
+
+
 class LiveGraph():
 
     def __init__(self, graph_title, x_title="", y_title="", x_range=None, y_range=None):
-        self.figure = PLT.figure(figsize=(15, 10), dpi=100)
+        self.figure = PLT.figure(figsize=(10, 7.5), dpi=100)
         self.figure.suptitle(graph_title)
         PLT.xlabel(x_title)
         PLT.ylabel(y_title)
@@ -14,6 +17,7 @@ class LiveGraph():
         self.target_graph = None
         self.figure.show()
 
+    @timer("Updating the graph")
     def update(self, actuals, targets, upscale=None):
         if actuals: self.actual_graph = self.plot(actuals, self.actual_graph, marker=".", line_style="-")
         if targets: self.target_graph = self.plot(targets, self.target_graph, marker="X", line_style="None")
