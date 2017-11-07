@@ -1,15 +1,15 @@
 {
     "dataset": {
         "file": "datasets/TSP/2.txt",
-        "epochs":10000,
+        "epochs":30000,
         "neighbourhood": {
-            "initial": 0.25,
-            "decay": 1000,
-            "function": ""
+            "initial": 8,
+            "decay": 3500,
+            "function": "exponential_decay"
         },
         "learning rate": {
-            "initial": 0.25,
-            "decay": 1000,
+            "initial": 0.6,
+            "decay": 15000,
             "function": ""
         }
     },
@@ -19,7 +19,7 @@
         "feature independant": true
     },
     "visuals": {
-        "on": true,
+        "on": false,
         "title": "Travelling Salesman Problem",
         "refresh rate": 50,
         "print rate": 500

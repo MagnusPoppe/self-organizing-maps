@@ -7,7 +7,8 @@ class LiveGraph():
 
     def __init__(self, graph_title, x_title="", y_title="", x_range=None, y_range=None):
         self.figure = PLT.figure(figsize=(10, 7.5), dpi=100)
-        self.figure.suptitle(graph_title)
+        # self.figure.suptitle(graph_title)
+        self.figure.canvas.set_window_title(graph_title)
         PLT.xlabel(x_title)
         PLT.ylabel(y_title)
         if x_range: PLT.xlim([*x_range])

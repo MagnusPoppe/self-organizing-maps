@@ -19,8 +19,8 @@ class Configuration():
 
         # Network parameters:
         self.epochs                  = config["dataset"]["epochs"]
-        self.random_range            = (0, 1)
-
+        self.random_range            = (config["random range"][0],config["random range"][1])
+        self.multiplier              = 4
         # Case setup:
         self.dataset                 = config["dataset"]["file"]
         self.normalize               = config["normalize"]["use"]

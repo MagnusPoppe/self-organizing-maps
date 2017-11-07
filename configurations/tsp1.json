@@ -1,22 +1,22 @@
 {
     "dataset": {
         "file": "datasets/TSP/1.txt",
-        "epochs":10000,
+        "epochs":30000,
         "neighbourhood": {
-            "initial": 0.25,
-            "decay": 1000,
-            "function": ""
+            "initial": 5,
+            "decay": 5000,
+            "function": "exponential_decay"
         },
         "learning rate": {
-            "initial": 0.25,
-            "decay": 1000,
+            "initial": 0.6,
+            "decay": 7000,
             "function": ""
         }
     },
-    "random range": [0,1],
+    "random range": [0, 1.0],
     "normalize": {
         "use": true,
-        "feature independant": true
+        "feature independant": false
     },
     "visuals": {
         "on": true,
