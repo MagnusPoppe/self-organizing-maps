@@ -29,7 +29,7 @@ class Trainer():
         if self.config.visuals:
 
             from live_graph import LiveGraph
-            self.graph = LiveGraph("Travelling salesman problem", "x", "y")
+            self.graph = LiveGraph(self.config.title, "x", "y")
 
     @timer("Training")
     def train(self):
@@ -56,7 +56,6 @@ class Trainer():
     def organize_map(self, input, case, sigma, learning_rate):
         # Finding the BMU
         feature = calc.reduce_min(input, self.weights[case])
-        winner = self.weights[case][feature]
 
         for lattice_dist in range( -(len(self.weights)//2), (len(self.weights)//2)+1  ):
 
@@ -65,7 +64,5 @@ class Trainer():
             wgt = (case + lattice_dist) % len(self.weights)
 
             if hood > 0:
-                i = wgt # TODO: Should this be case or index?
-                weight = self.weights[i][feature]
-                delta = calc.weight_delta(weight, weight, learning_rate, input[feature], hood)
+                delta = calc.weight_delta(self.weights[wgt][feature], learning_rate, input[feature], hood)
                 self.weights[wgt][feature] = delta

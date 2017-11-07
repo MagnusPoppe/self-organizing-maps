@@ -1,0 +1,24 @@
+{
+    "datasets": {
+        "TSP/1.txt" : {"epochs":10000, "neighbourhood":2, "n_decay":1000, "learning_rate": 0.3, "lr_decay": 500},
+        "TSP/2.txt" : {"epochs":10000, "neighbourhood":2, "n_decay":1000, "learning_rate": 0.3, "lr_decay": 500},
+        "TSP/3.txt" : {"epochs":10000, "neighbourhood":2, "n_decay":1000, "learning_rate": 0.3, "lr_decay": 500},
+        "TSP/4.txt" : {"epochs":10000, "neighbourhood":2, "n_decay":1000, "learning_rate": 0.3, "lr_decay": 500},
+        "TSP/5.txt" : {"epochs":10000, "neighbourhood":2, "n_decay":1000, "learning_rate": 0.3, "lr_decay": 500},
+        "TSP/6.txt" : {"epochs":10000, "neighbourhood":2, "n_decay":1000, "learning_rate": 0.3, "lr_decay": 500},
+        "TSP/7.txt" : {"epochs":10000, "neighbourhood":2, "n_decay":1000, "learning_rate": 0.3, "lr_decay": 500},
+        "TSP/8.txt" : {"epochs":10000, "neighbourhood":2, "n_decay":1000, "learning_rate": 0.3, "lr_decay": 500},
+        "TSP/9.txt" : {"epochs":10000, "neighbourhood":2, "n_decay":1000, "learning_rate": 0.3, "lr_decay": 500},
+        "TSP/10.txt": {"epochs":10000, "neighbourhood":2, "n_decay":1000, "learning_rate": 0.3, "lr_decay": 500}
+    },
+    "random range": [0,1],
+    "normalize": {
+        "use": true,
+        "feature independant": true
+    },
+    "visuals": {
+        "on": true,
+        "refresh rate": 50,
+        "print rate": 500
+    }
+}

@@ -1,0 +1,27 @@
+{
+    "dataset": {
+        "file": "datasets/TSP/7.txt",
+        "epochs":10000,
+        "neighbourhood": {
+            "initial": 0.25,
+            "decay": 1000,
+            "function": ""
+        },
+        "learning rate": {
+            "initial": 0.25,
+            "decay": 1000,
+            "function": ""
+        }
+    },
+    "random range": [0,1],
+    "normalize": {
+        "use": true,
+        "feature independant": true
+    },
+    "visuals": {
+        "on": true,
+        "title": "Travelling Salesman Problem",
+        "refresh rate": 50,
+        "print rate": 500
+    }
+}

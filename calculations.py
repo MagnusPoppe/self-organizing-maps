@@ -15,8 +15,8 @@ def euclidian_distance(x, y):
 def topological_neighbourhood(latteral_distance, sigma):
     return np.exp( -np.power(latteral_distance, 2) /  (2 * np.power(sigma, 2)) )
 
-def weight_delta(weight, weight_winner, learning_rate, input, neighbourhood):
-    return weight + ((learning_rate * neighbourhood) * (input - weight_winner))
+def weight_delta(weight, learning_rate, input, neighbourhood):
+    return weight + ((learning_rate * neighbourhood) * (input - weight))
 
 def reduce_min(input, weights):
     """ Finds the minimum distance using euclidian distance.

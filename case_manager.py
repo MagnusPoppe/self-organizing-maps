@@ -29,7 +29,7 @@ class CaseManager():
                     raise Exception("Failed to interpret dataset...")
 
         if config.normalize:
-            dataset = self.normalize(dataset, config.normalize_feature_independant)
+            dataset = self.normalize(dataset, config.normalization_mode)
         return dataset
 
     def normalize(self, dataset, feature_independant):

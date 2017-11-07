@@ -5,7 +5,7 @@ from decorators import timer, instanciate_globals, print_time_averages, print_ti
 
 @timer("Total time: ")
 def run():
-    config = Configuration("datasets/TSP/1.txt")
+    config = Configuration("configurations/tsp10.json")
     trainer = Trainer( config )
     try:
         trainer.train()
