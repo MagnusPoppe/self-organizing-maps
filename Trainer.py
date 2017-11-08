@@ -7,25 +7,11 @@ import calculations as calc
 
 class Trainer():
 
-    @timer("Initialization")
     def __init__(self, configuration: Configuration):
-        def initialize():
-            """
-            Initializing the weight matrix. Weights are created using the following structure:
-            self.weights contains nodes up to number of outputs
-                features containing one node for each input
-                    feature containing a random value.
-            :return: the weight matrix
-            """
-            weights = []
-            for multiply in range(self.config.multiplier):
-                for input in self.network.inputs:
-                    weights += [[np.random.uniform(*self.config.random_range) for feature in input]]
-            return weights
 
         self.config = configuration
         self.network = Network1D(configuration)
-        self.weights = initialize()
+        self.weights = self.network.neurons
 
         if self.config.visuals:
 
@@ -58,7 +44,7 @@ class Trainer():
         # Finding the BMU (Best matching unit)
         # feature = calc.reduce_min(input, self.weights[case])
         bmu = calc.bmu(input, self.weights)
-        for lattice_dist in range( -(len(self.weights)//2), (len(self.weights)//2)+1  ):
+        for lattice_dist in self.network.get_neighbourhood():
 
             # Checking of the node is included in the neighbourhood:
             hood = calc.topological_neighbourhood(lattice_dist, sigma)

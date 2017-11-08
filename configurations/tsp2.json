@@ -1,7 +1,7 @@
 {
     "dataset": {
         "file": "datasets/TSP/2.txt",
-        "epochs":30000,
+        "epochs":15000,
         "neighbourhood": {
             "initial": 8,
             "decay": 3500,

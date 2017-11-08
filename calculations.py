@@ -21,23 +21,12 @@ def topological_neighbourhood(latteral_distance, sigma):
 def weight_delta(weight, learning_rate, input, neighbourhood):
     return weight + (learning_rate * neighbourhood * (input - weight))
 
-#
-# def reduce_min(input, weights):
-#     """ Finds the minimum distance using euclidian distance.
-#         Formula for euclidian distance in one dimension:
-#         \sqrt{(x-y)^2} = |x-y|.
-#     """
-#     distance = [ np.sqrt(np.power((input - weight), 2)) for weight, input in zip(weights, input)]
-#
-#     return distance.index(min(distance))
-#
-
 def bmu(input, nodes):
     i, v = shortest_distance((input, nodes))
     return i
 
-def shortest_distance(zipper):
-    input, nodes = zipper
+def shortest_distance(io:tuple):
+    input, nodes = io
     data = []
     for weights in nodes:
         data.append(0)

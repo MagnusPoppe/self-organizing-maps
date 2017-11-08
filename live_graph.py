@@ -18,13 +18,13 @@ class LiveGraph():
         self.target_graph = None
         self.figure.show()
 
-    @timer("Updating the graph")
+    @timer("Graph update")
     def update(self, actuals, targets, upscale=None):
         if actuals: self.actual_graph = self.plot(actuals, self.actual_graph, marker=".", line_style="-")
         if targets: self.target_graph = self.plot(targets, self.target_graph, marker="X", line_style="None")
 
         self.figure.canvas.draw()
-        PLT.pause(0.00025)
+        PLT.pause(0.0000000000000000000001) # little effect on performance.
 
     def plot(self, histogram, graph, marker=".", line_style="-", invert=False, upscale=None):
         yl, xl = [], []
