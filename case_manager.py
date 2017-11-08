@@ -4,7 +4,8 @@ import sys
 class CaseManager():
 
     def __init__(self, file, config):
-        if "TSP" in file: self.dataset = self.read_tsp_file(file, config)
+        if "TSP" in file:     self.dataset = self.read_tsp_file(file, config)
+        elif "mnist" in file: self.dataset = self.read_mnist(file, config)
         else: raise Exception("Unknown case...")
 
     def read_tsp_file(self, file, config):
@@ -44,4 +45,10 @@ class CaseManager():
             data[1] = data[1] / highx
             data[2] = data[2] / highy
         self.normalized_by = highx, highy
+        return dataset
+
+    def read_mnist(self, file, config):
+        from datasets.mnist import mnist_basics
+        dataset, labels = mnist_basics.gen_flat_cases()
+        self.labels = labels
         return dataset

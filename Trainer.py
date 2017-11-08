@@ -2,7 +2,7 @@ import numpy as np
 
 from configuration import Configuration
 from decorators import timer
-from network import Network1D
+from network import Network1D, Network2D
 import calculations as calc
 
 class Trainer():
@@ -10,7 +10,8 @@ class Trainer():
     def __init__(self, configuration: Configuration):
 
         self.config = configuration
-        self.network = Network1D(configuration)
+        if configuration.dataset == "mnist": self.network = Network2D(configuration)
+        else:                                self.network = Network1D(configuration)
         self.weights = self.network.neurons
 
         if self.config.visuals:
@@ -49,7 +50,7 @@ class Trainer():
             # Checking of the node is included in the neighbourhood:
             hood = calc.topological_neighbourhood(lattice_dist, sigma)
 
-            if hood > 0:
+            if hood > 0: # matrix multiply
                 wgt = (bmu + lattice_dist) % len(self.weights)
                 for feature in range(len(input)):
                     delta = calc.weight_delta(self.weights[wgt][feature], learning_rate, input[feature], hood)
