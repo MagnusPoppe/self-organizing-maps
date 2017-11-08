@@ -33,14 +33,14 @@ def weight_delta(weight, learning_rate, input, neighbourhood):
 #
 
 def bmu(input, nodes):
-    return shortest_distance((input, nodes))[0]
-
+    i, v = shortest_distance((input, nodes))
+    return i
 
 def shortest_distance(zipper):
     input, nodes = zipper
     data = []
-    data.append(0)
     for weights in nodes:
+        data.append(0)
         for feature, weight in zip(input, weights):
             data[-1] = data[-1] + np.power(feature - weight, 2)
         data[-1] = np.sqrt(data[-1])
@@ -50,7 +50,7 @@ def shortest_distance(zipper):
 def parallel_bmu(input, nodes):
     # Setup:
     result = [None]
-    processes = 2#multiprocessing.cpu_count()
+    processes = multiprocessing.cpu_count()
     tasks_per_proc = int(len(nodes) / processes)
     tasks = [(input, nodes[i*tasks_per_proc:(i+1)*tasks_per_proc]) for i in range(processes)]
 

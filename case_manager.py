@@ -1,7 +1,5 @@
 import sys
 
-from node import TSPNode
-
 
 class CaseManager():
 

@@ -19,7 +19,7 @@
         "feature independant": true
     },
     "visuals": {
-        "on": false,
+        "on": true,
         "title": "Travelling Salesman Problem",
         "refresh rate": 50,
         "print rate": 500
