@@ -43,7 +43,7 @@ class Network1D(Network):
         """
         import numpy as np
 
-        return [ [np.random.uniform(*self.config.random_range, size=len(self.inputs[0]))] for i in range(len(self.inputs)*self.config.multiplier)]
+        return [ np.random.uniform(*self.config.random_range, size=len(self.inputs[0])) for i in range(len(self.inputs)*self.config.multiplier)]
 
 class Network2D(Network):
 
