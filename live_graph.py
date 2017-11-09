@@ -28,6 +28,7 @@ class LiveGraph():
 
     def plot(self, histogram, graph, marker=".", line_style="-", invert=False, upscale=None):
         yl, xl = [], []
+        if len(histogram[0]) == 1:histogram = [ x[0] for x in histogram]
         for x, y in histogram:
             xl.append(x if not upscale else x*upscale[0])
             yl.append(y if not upscale else x*upscale[1])

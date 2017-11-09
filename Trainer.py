@@ -53,5 +53,5 @@ class Trainer():
             if hood > 0: # matrix multiply
                 wgt = (bmu + lattice_dist) % len(self.weights)
                 for feature in range(len(input)):
-                    delta = calc.weight_delta(self.weights[wgt][feature], learning_rate, input[feature], hood)
-                    self.weights[wgt][feature] = delta
+                    delta = calc.weight_delta(self.weights[wgt][0][feature], learning_rate, input[feature], hood)
+                    self.weights[wgt][0][feature] = delta

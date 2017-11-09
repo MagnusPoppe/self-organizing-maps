@@ -11,10 +11,9 @@ class Network():
         # Layers
         self.inputs = self.generate_input_vectors(self.config.casemanager.dataset)
         self.neurons = self.initialize()
-        pass
 
     def random_input(self):
-        if not self.remaining: self.remaining = list(range(0, self.config.nodes-1))
+        if not self.remaining: self.remaining = list(range(0, len(self.inputs)))
         index = random.choice(self.remaining)
         self.remaining.remove(index)
         return index, self.inputs[index]
@@ -42,13 +41,16 @@ class Network1D(Network):
         :return: the weight matrix
         """
         import numpy as np
-
-        return [ np.random.uniform(*self.config.random_range, size=len(self.inputs[0])) for i in range(len(self.inputs)*self.config.multiplier)]
+        output = []
+        for i in range(len(self.inputs) * self.config.multiplier):
+            output += [ [np.random.uniform(*self.config.random_range, size=len(self.inputs[0]))]]
+        return output
 
 class Network2D(Network):
 
     def __init__(self, configuration: Configuration):
         self.grid_size = (5,5)
+        self.nodes = self.grid_size[0]*self.grid_size[1]
         super().__init__(configuration)
 
     def generate_input_vectors(self, dataset):
@@ -56,4 +58,7 @@ class Network2D(Network):
 
     def initialize(self):
         import numpy as np
-        return [np.random.uniform(*self.config.random_range, size=self.grid_size)]
+        output = []
+        for i in range(len(self.inputs[0]) * self.config.multiplier):
+            output += [ np.random.uniform(*self.config.random_range, size=self.grid_size)]
+        return output

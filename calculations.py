@@ -30,8 +30,10 @@ def shortest_distance(io:tuple):
     data = []
     for weights in nodes:
         data.append(0)
-        for feature, weight in zip(input, weights):
-            data[-1] = data[-1] + np.power(feature - weight, 2)
+        # if not isinstance(weights[0], np.ndarray): weights = [weights]
+        for wgt in weights:
+            for feature, weight in zip(input, wgt):
+                data[-1] = data[-1] + np.power(feature - weight, 2)
         data[-1] = np.sqrt(data[-1])
     minimum = min(data)
     return data.index(minimum), minimum
