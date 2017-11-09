@@ -27,14 +27,16 @@ def bmu(input, nodes):
 
 def shortest_distance(io:tuple):
     input, nodes = io
-    data = []
+    data = [0]* (len(nodes[0]) * len(nodes[0][0]))
     for weights in nodes:
-        data.append(0)
-        # if not isinstance(weights[0], np.ndarray): weights = [weights]
-        for wgt in weights:
-            for feature, weight in zip(input, wgt):
-                data[-1] = data[-1] + np.power(feature - weight, 2)
-        data[-1] = np.sqrt(data[-1])
+        for y, wgt in enumerate(weights):
+            # data.append(0)
+            ymod = y*len(wgt)
+            for x, tup in enumerate(list(zip(input, wgt))):
+                feature, weight = tup
+                data[x+ymod] += np.power(feature - weight, 2)
+    for i in range(len(data)):
+        data[i] = np.sqrt(data[i])
     minimum = min(data)
     return data.index(minimum), minimum
 

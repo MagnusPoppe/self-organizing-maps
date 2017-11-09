@@ -15,8 +15,9 @@ class Trainer():
         self.weights = self.network.neurons
 
         if self.config.visuals:
-            from live_graph import LiveGraph
-            self.graph = LiveGraph(self.config.title, "x", "y")
+            from live_graph import LiveGraph, LiveGrid
+            gclass = LiveGraph if self.config.dataset != "mnist" else LiveGrid
+            self.graph  = gclass(self.config.title, "x", "y")
         print("Setup complete!\n")
 
     @timer("Training")
@@ -37,27 +38,21 @@ class Trainer():
 
             # Displaying visuals if system is configured to do so.
             if self.config.visuals and epoch % self.config.visuals_refresh_rate == 0:
-                self.graph.update(actuals=self.weights + [self.weights[0]], targets=self.network.inputs)
+                if self.config.dataset != "mnist":
+                    self.graph.update(actuals=self.weights + [self.weights[0]], targets=self.network.inputs)
+                else:
+                    self.graph.update(self.network.neurons)
+
             if epoch % self.config.printout_rate == 0:
                 print("Current state: \n\tSigma:         %f \n\tLearning rate: %f\n" % (sigma, learning_rate))
 
     @timer("Organize map")
     def organize_map(self, input, case, sigma, learning_rate):
         # Finding the BMU (Best matching unit)
-        bmu = calc.bmu(input, self.weights)
+        bmu = self.network.bmu(input, self.weights)
 
         # Tracking the winners
         if isinstance(self.network, Network2D):
             self.network.winnerlist[bmu] += [case]
 
-        for lattice_dist in self.network.get_neighbourhood():
-
-            # Checking of the node is included in the neighbourhood:
-            hood = calc.topological_neighbourhood(lattice_dist, sigma)
-
-            if hood > 0: # matrix multiply
-                wgt = (bmu + lattice_dist) % len(self.weights)
-                for feature in range(len(self.weights[0])):
-                    for y in range(len(self.weights[0][0])):
-                        delta = calc.weight_delta(self.weights[wgt][y][feature], learning_rate, input[feature], hood)
-                        self.weights[wgt][y][feature] = delta
+        self.network.update_weights(self.weights, bmu, input, learning_rate, sigma)
