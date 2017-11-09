@@ -19,7 +19,7 @@
         "feature independant": true
     },
     "visuals": {
-        "on": true,
+        "on": false,
         "title": "Mnist Handwritten digit database",
         "refresh rate": 50,
         "print rate": 500

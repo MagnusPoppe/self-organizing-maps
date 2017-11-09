@@ -43,7 +43,7 @@ class Network1D(Network):
         import numpy as np
         output = []
         for i in range(len(self.inputs) * self.config.multiplier):
-            output += [ [np.random.uniform(*self.config.random_range, size=len(self.inputs[0]))]]
+            output += [ [np.random.uniform(*self.config.random_range, size=len(self.inputs[0]))] ]
         return output
 
 class Network2D(Network):
@@ -53,8 +53,16 @@ class Network2D(Network):
         self.nodes = self.grid_size[0]*self.grid_size[1]
         super().__init__(configuration)
 
+        # The winner list is a counter for total cases won per neuron
+        self.winnerlist = []
+        for x in range(len(self.neurons)):
+            self.winnerlist += [[]]
+
     def generate_input_vectors(self, dataset):
         return dataset # No preprocessing needed.
+
+    def get_neighbourhood(self):
+        return range( -(len(self.neurons)//2), (len(self.neurons)//2)+1  )
 
     def initialize(self):
         import numpy as np

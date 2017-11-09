@@ -15,12 +15,13 @@ class Trainer():
         self.weights = self.network.neurons
 
         if self.config.visuals:
-
             from live_graph import LiveGraph
             self.graph = LiveGraph(self.config.title, "x", "y")
+        print("Setup complete!\n")
 
     @timer("Training")
     def train(self):
+        print("Starting training")
         # Running random cases for a number of epochs:
         for epoch in range(1, self.config.epochs):
 
@@ -32,7 +33,7 @@ class Trainer():
             case, input = self.network.random_input()
 
             # Running the self organizing map algorithm:
-            self.organize_map(input, sigma, learning_rate)
+            self.organize_map(input, case, sigma, learning_rate)
 
             # Displaying visuals if system is configured to do so.
             if self.config.visuals and epoch % self.config.visuals_refresh_rate == 0:
@@ -41,10 +42,14 @@ class Trainer():
                 print("Current state: \n\tSigma:         %f \n\tLearning rate: %f\n" % (sigma, learning_rate))
 
     @timer("Organize map")
-    def organize_map(self, input, sigma, learning_rate):
+    def organize_map(self, input, case, sigma, learning_rate):
         # Finding the BMU (Best matching unit)
-        # feature = calc.reduce_min(input, self.weights[case])
         bmu = calc.bmu(input, self.weights)
+
+        # Tracking the winners
+        if isinstance(self.network, Network2D):
+            self.network.winnerlist[bmu] += [case]
+
         for lattice_dist in self.network.get_neighbourhood():
 
             # Checking of the node is included in the neighbourhood:
@@ -52,6 +57,7 @@ class Trainer():
 
             if hood > 0: # matrix multiply
                 wgt = (bmu + lattice_dist) % len(self.weights)
-                for feature in range(len(input)):
-                    delta = calc.weight_delta(self.weights[wgt][0][feature], learning_rate, input[feature], hood)
-                    self.weights[wgt][0][feature] = delta
+                for feature in range(len(self.weights[0])):
+                    for y in range(len(self.weights[0][0])):
+                        delta = calc.weight_delta(self.weights[wgt][y][feature], learning_rate, input[feature], hood)
+                        self.weights[wgt][y][feature] = delta
