@@ -1,7 +1,6 @@
-import numpy as np
-
 from configuration import Configuration
 from decorators import timer
+from grid import Grid
 from network import Network1D, Network2D
 import calculations as calc
 
@@ -14,10 +13,13 @@ class Trainer():
         else:                                self.network = Network1D(configuration)
         self.weights = self.network.neurons
 
-        if self.config.visuals:
-            from live_graph import LiveGraph, LiveGrid
-            gclass = LiveGraph if self.config.dataset != "mnist" else LiveGrid
-            self.graph  = gclass(self.config.title, "x", "y")
+        if self.config.visuals and isinstance(self.network, Network1D):
+            from live_graph import LiveGraph
+            self.graph  = LiveGraph(self.config.title, "x", "y")
+
+        elif self.config.visuals:
+            self.graph = Grid(title=self.config.title, speed=0)
+
         print("Setup complete!\n")
 
     @timer("Training")
@@ -41,7 +43,7 @@ class Trainer():
                 if self.config.dataset != "mnist":
                     self.graph.update(actuals=self.weights + [self.weights[0]], targets=self.network.inputs)
                 else:
-                    self.graph.update(self.network.neurons)
+                    self.graph.update(self.network.drawable())
 
             if epoch % self.config.printout_rate == 0:
                 print("Current state: \n\tSigma:         %f \n\tLearning rate: %f\n" % (sigma, learning_rate))
@@ -49,7 +51,7 @@ class Trainer():
     @timer("Organize map")
     def organize_map(self, input, case, sigma, learning_rate):
         # Finding the BMU (Best matching unit)
-        bmu = self.network.bmu(input, self.weights)
+        bmu = self.network.parallel_bmu(input, self.weights)
 
         # Tracking the winners
         if isinstance(self.network, Network2D):

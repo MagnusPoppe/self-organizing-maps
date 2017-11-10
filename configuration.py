@@ -19,12 +19,17 @@ class Configuration():
 
         # Network parameters:
         self.epochs                  = config["dataset"]["epochs"]
-        self.random_range            = (config["random range"][0],config["random range"][1])
-        self.multiplier              = 1
+        self.random_range            = (config["random range"][0], config["random range"][1])
+        self.multiplier              = config["node multiplier"]
+        try: self.grid               = (config["neurons"][0], config["neurons"][1])
+        except KeyError:             pass
+
         # Case setup:
         self.dataset                 = config["dataset"]["file"]
         self.normalize               = config["normalize"]["use"]
         self.normalization_mode      = config["normalize"]["feature independant"]
+        try: self.fraction           = config["dataset"]["fraction"]
+        except KeyError:             pass
 
         # User interface:
         self.title                   = config["visuals"]["title"]

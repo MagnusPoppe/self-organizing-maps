@@ -33,7 +33,7 @@ class CaseManager():
 
     def read_mnist(self, config):
         from datasets.mnist import mnist_basics
-        dataset, labels = mnist_basics.gen_flat_cases()
+        dataset, labels = mnist_basics.gen_flat_cases(fraction=config.fraction)
         self.labels = labels
         config.features = len(dataset[0])
         return dataset

@@ -1,6 +1,8 @@
 import random
 
+import multiprocessing
 import numpy as np
+import sys
 
 import calculations as calc
 from configuration import Configuration
@@ -76,7 +78,7 @@ class Network1D(Network):
 class Network2D(Network):
 
     def __init__(self, configuration: Configuration):
-        self.grid_size = (5,5)
+        self.grid_size = configuration.grid
         self.nodes = self.grid_size[0]*self.grid_size[1]
         super().__init__(configuration)
 
@@ -105,7 +107,6 @@ class Network2D(Network):
         data = [0] * (len(nodes[0]) * len(nodes[0][0]))
         for weights in nodes:
             for y, wgt in enumerate(weights):
-                # data.append(0)
                 ymod = y * len(wgt)
                 for x, tup in enumerate(list(zip(input, wgt))):
                     feature, weight = tup
@@ -116,15 +117,37 @@ class Network2D(Network):
         return data.index(minimum), minimum
 
     def update_weights(self, weights, bmu, input, learning_rate, sigma):
+        # Setup:
+        grid = self.grid_size[1] * self.grid_size[0]
+        neighbourhood = np.ndarray(shape=self.grid_size)
+        bmux, bmuy = bmu % np.sqrt(grid), bmu // np.sqrt(grid)
 
-        for lattice_dist in self.get_neighbourhood():
+        # MANHATTEN DISTANCE BETWEEN NODES
+        for i in range(grid):
+            y, x = int(i // np.sqrt(grid)), int(i % np.sqrt(grid))
+            neighbourhood[y] += [calc.topological_neighbourhood(abs(bmux - x) + abs(bmuy - y), sigma)]
 
-            # Checking of the node is included in the neighbourhood:
-            hood = calc.topological_neighbourhood(lattice_dist, sigma)
+        # UPDATE THE WEIGHTS.
+        for z in range(len(weights)):
+            for y in range(len(neighbourhood)):
+                for x in range(len(neighbourhood[y])):
+                    delta = calc.weight_delta(weights[z][y][x], learning_rate, input[z], neighbourhood[y][x])
+                    weights[z][y][x] = delta
 
-            if hood > 0:  # matrix multiply
-                wgt = (bmu + lattice_dist) % len(weights)
-                for y in range(len(weights[0])):
-                    for feature in range(len(weights[0][0])):
-                        delta = calc.weight_delta(weights[wgt][y][feature], learning_rate, input[feature], hood)
-                        weights[wgt][y][feature] = delta
+
+    def drawable(self):
+        matrix = []
+        for i in range(len(self.winnerlist)):
+
+            # Creating the histogram:
+            histogram = [0]*10
+            for entry in self.winnerlist[i]:
+                histogram[ self.config.casemanager.labels[entry] ] += 1
+
+            # Finding the correct value for (x,y)
+            if i % np.sqrt(len(self.winnerlist)) == 0: matrix.append([-1]*int(np.sqrt(len(self.winnerlist))))
+            y, x = int(i // np.sqrt(len(self.winnerlist))), int(i % np.sqrt(len(self.winnerlist)))
+            if any(e > 0 for e in histogram):
+                matrix[y][x] = histogram.index(max(histogram))
+
+        return matrix

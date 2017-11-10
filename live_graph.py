@@ -51,10 +51,36 @@ class LiveGrid(Graph):
 
     def __init__(self, graph_title, x_title="", y_title="", x_range=None, y_range=None):
         super().__init__(graph_title, x_title, y_title, x_range, y_range)
-        self.grid_graph = None
-        self.x = None
+        self.graph = None
+        self.grid_color_map = [
+            "green",
+            "purple",
+            "yellow",
+            "blue",
+            "salmon",
+            "maroon",
+            "brown",
+            "pink",
+            "red",
+            "orange"
+        ]
 
-    def update(self, grid):
-        if self.x: self.x.clear()
-        self.x = nx.grid_graph(grid)
-        nx.draw(self.x)
+    @timer("Grid update")
+    def update(self, dims, grid):
+        if not self.graph:
+            self.graph = nx.grid_graph([dims[0],dims[1]])
+
+        self.figure.clear()
+
+        colors = self.map_colors(grid)
+        nx.spring_layout(self.graph)
+        nx.draw(self.graph, node_color=colors)
+        self.figure.canvas.draw()
+        PLT.pause(0.1)
+
+    def map_colors(self, grid):
+        colors = []
+        for y in range(len(grid)):
+            for x in range(len(grid[y])):
+                colors += [self.grid_color_map[grid[y][x]]]
+        return colors

@@ -1,27 +1,30 @@
 {
     "dataset": {
         "file": "mnist",
+        "fraction": 0.1,
         "epochs":10000,
         "neighbourhood": {
-            "initial": 0.25,
+            "initial": 5,
             "decay": 1000,
             "function": ""
         },
         "learning rate": {
-            "initial": 0.25,
+            "initial": 0.75,
             "decay": 1000,
             "function": ""
         }
     },
     "random range": [0,1],
+    "node multiplier": 1,
+    "neurons": [7,7],
     "normalize": {
         "use": true,
         "feature independant": true
     },
     "visuals": {
         "on": true,
-        "title": "Mnist Handwritten digit database",
-        "refresh rate": 50,
+        "title": "MNIST: Handwritten digit database",
+        "refresh rate": 500,
         "print rate": 500
     }
 }
