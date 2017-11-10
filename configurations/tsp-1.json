@@ -1,0 +1,28 @@
+{
+    "dataset": {
+        "file": "datasets/TSP/1.txt",
+        "epochs":100,
+        "neighbourhood": {
+            "initial": 8,
+            "decay": 10,
+            "function": "exponential_decay"
+        },
+        "learning rate": {
+            "initial": 0.8,
+            "decay": 500,
+            "function": ""
+        }
+    },
+    "random range": [0, 1.0],
+    "node multiplier": 2,
+    "normalize": {
+        "use": true,
+        "feature independant": false
+    },
+    "visuals": {
+        "on": true,
+        "title": "Travelling Salesman Problem",
+        "refresh rate": 1,
+        "print rate": 1
+    }
+}
