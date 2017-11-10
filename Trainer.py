@@ -50,7 +50,6 @@ class Trainer():
                 else:
                     drawn = self.network.drawable()
                     self.graph.update(drawn)
-
             if epoch % self.config.printout_rate == 0:
                 print("Current state: \n\tSigma:         %f \n\tLearning rate: %f\n" % (sigma, learning_rate))
 
