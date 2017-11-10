@@ -84,6 +84,7 @@ class Network2D(Network):
 
         # The winner list is a counter for total cases won per neuron
         self.winnerlist = [[] for x in range(self.grid_size[0]*self.grid_size[1])]
+        self.threshold = 1e-10
 
     def generate_input_vectors(self, dataset):
         return dataset # No preprocessing needed.
@@ -131,8 +132,9 @@ class Network2D(Network):
         for z in range(len(weights)):
             for y in range(len(neighbourhood)):
                 for x in range(len(neighbourhood[y])):
-                    delta = calc.weight_delta(weights[z][y][x], learning_rate, input[z], neighbourhood[y][x])
-                    weights[z][y][x] = delta
+                    if neighbourhood[y][x] > self.threshold: # To avoid overflows
+                        delta = calc.weight_delta(weights[z][y][x], learning_rate, input[z], neighbourhood[y][x])
+                        weights[z][y][x] = delta
 
 
     def drawable(self):
@@ -151,3 +153,38 @@ class Network2D(Network):
                 matrix[y][x] = histogram.index(max(histogram))
 
         return matrix
+
+
+    def parallel_bmu(self, input, nodes):
+        # Setup:
+        result = [None]
+        processes = int(multiprocessing.cpu_count()/2)
+        tasks_per_proc = int(len(nodes) / processes)
+        tasks = [(input, nodes[i*tasks_per_proc:(i+1)*tasks_per_proc]) for i in range(processes)]
+
+        # Spawning processes:
+        pool = multiprocessing.Pool(processes=processes-1)
+        pool.map_async(
+            func=self.shortest_distance,
+            iterable=tasks[:-1],
+            callback=self.callback(result, tasks_per_proc),
+            error_callback=lambda x: print(x))
+
+        i, v = self.shortest_distance(tasks[-1])
+
+        # Waiting for sync
+        while result[0] is None: pass
+        pool.terminate()
+
+        ii, vv = result[0]
+        return i if v < vv else ii
+
+    def callback(self, result, no_tasks):
+        def gather_bmu(results):
+            best_value, best_index= sys.maxsize, -1
+            for i, res in enumerate(results):
+                index, value = res
+                if value < best_value: best_index, best_value = index, value
+            result[0] = best_index, best_value # THIS VALUE IS SENT TO THE MAIN PROCESS.
+
+        return gather_bmu

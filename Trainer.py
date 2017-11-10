@@ -51,7 +51,7 @@ class Trainer():
     @timer("Organize map")
     def organize_map(self, input, case, sigma, learning_rate):
         # Finding the BMU (Best matching unit)
-        bmu = self.network.parallel_bmu(input, self.weights)
+        bmu = self.network.bmu(input, self.weights)
 
         # Tracking the winners
         if isinstance(self.network, Network2D):
