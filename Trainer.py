@@ -1,4 +1,5 @@
 import numpy as np
+import numexpr as ne
 
 from configuration import Configuration
 from decorators import timer
@@ -23,6 +24,7 @@ class Trainer():
             self.graph = Grid(title=self.config.title, speed=0)
 
         print("Setup complete!\n")
+        print("NumExpr info:\ncores=%d\nthreads=%d\nVML Version=%s" % (ne.ncores, ne.nthreads, ne.get_vml_version()))
 
     @timer("Training")
     def train(self):
@@ -66,6 +68,8 @@ class Trainer():
             self.network.winnerlist[bmu] += [case]
 
         neighbourhood = self.network.neighbourhood(sigma, bmu, len(self.neurons))
+        # neurons = self.neurons
+        # self.neurons = ne.evaluate('neurons + (neighbourhood * learning_rate * (inn - neurons))')
         self.neurons = self.neurons + (neighbourhood * learning_rate * (inn - self.neurons))
 
     def bmu(self, inputs, nodes):

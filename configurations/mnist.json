@@ -2,7 +2,7 @@
     "dataset": {
         "file": "mnist",
         "fraction": 0.1,
-        "epochs":10000,
+        "epochs":150,
         "neighbourhood": {
             "initial": 5,
             "decay": 1000,

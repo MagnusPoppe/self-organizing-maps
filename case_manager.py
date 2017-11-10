@@ -1,5 +1,7 @@
 import sys
 
+import numpy as np
+
 
 class CaseManager():
 
@@ -9,6 +11,21 @@ class CaseManager():
         else: raise Exception("Unknown case...")
 
     def read_tsp_file(self, file, config):
+        def normalize(dataset, feature_independant):
+            highx = highy = -sys.maxsize
+            for data in dataset:
+                i, x, y = data
+                highx = x if x > highx else highx
+                highy = y if y > highy else highy
+
+            if not feature_independant:
+                highx = highy = max(highx, highy)
+
+            for data in dataset:
+                data[1] = data[1] / highx
+                data[2] = data[2] / highy
+            self.normalized_by = highx, highy
+            return dataset
         config.features = 2
         dataset = []
         with open(file, "r") as f:
@@ -28,29 +45,19 @@ class CaseManager():
                     raise Exception("Failed to interpret dataset...")
 
         if config.normalize:
-            dataset = self.normalize(dataset, config.normalization_mode)
+            dataset = normalize(dataset, config.normalization_mode)
         return dataset
 
     def read_mnist(self, config):
+        def normalize(dataset, high=255):
+            for i in range(len(dataset)):
+                dataset[i] = np.array(dataset[i])
+                dataset[i] = dataset[i] / high
+            return dataset
         from datasets.mnist import mnist_basics
         dataset, labels = mnist_basics.gen_flat_cases(fraction=config.fraction)
-        #TODO: NORMALIZE...
+        dataset = normalize(dataset)
         self.labels = labels
         config.features = len(dataset[0])
         return dataset
 
-    def normalize(self, dataset, feature_independant):
-        highx = highy = -sys.maxsize
-        for data in dataset:
-            i, x, y = data
-            highx = x if x > highx else highx
-            highy = y if y > highy else highy
-
-        if not feature_independant:
-            highx = highy = max(highx, highy)
-
-        for data in dataset:
-            data[1] = data[1] / highx
-            data[2] = data[2] / highy
-        self.normalized_by = highx, highy
-        return dataset
