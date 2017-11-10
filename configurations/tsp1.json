@@ -14,6 +14,7 @@
         }
     },
     "random range": [0, 1.0],
+    "node multiplier": 2,
     "normalize": {
         "use": true,
         "feature independant": false
@@ -21,7 +22,7 @@
     "visuals": {
         "on": true,
         "title": "Travelling Salesman Problem",
-        "refresh rate": 50,
-        "print rate": 500
+        "refresh rate": 1,
+        "print rate": 1
     }
 }

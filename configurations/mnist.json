@@ -24,7 +24,7 @@
     "visuals": {
         "on": true,
         "title": "MNIST: Handwritten digit database",
-        "refresh rate": 500,
-        "print rate": 500
+        "refresh rate": 1,
+        "print rate": 1
     }
 }
