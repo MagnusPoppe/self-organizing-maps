@@ -30,6 +30,8 @@ class Configuration():
         self.normalization_mode      = config["normalize"]["feature independant"]
         try: self.fraction           = config["dataset"]["fraction"]
         except KeyError:             pass
+        try: self.accuracy_testing   = config["dataset"]["accuracy tests"]
+        except KeyError:             self.accuracy_testing = False
 
         # User interface:
         self.title                   = config["visuals"]["title"]

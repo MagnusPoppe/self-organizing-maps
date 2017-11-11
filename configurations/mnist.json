@@ -3,9 +3,10 @@
         "file": "mnist",
         "fraction": 0.1,
         "epochs":150,
+        "accuracy tests": true,
         "neighbourhood": {
             "initial": 5,
-            "decay": 1000,
+            "decay": 25,
             "function": ""
         },
         "learning rate": {

@@ -10,6 +10,20 @@ class CaseManager():
         elif "mnist" in file: self.dataset = self.read_mnist(config)
         else: raise Exception("Unknown case...")
 
+        if config.accuracy_testing:
+            # Partitioning testcases for accuracy testing:
+            train, valid, test = int(len(self.dataset)*0.80), int(len(self.dataset)*0.90), len(self.dataset)
+
+            # Dataset:
+            self.training       = self.dataset[:train]
+            self.vaidation      = self.dataset[train:valid]
+            self.test           = self.dataset[valid:test]
+
+            # Labels:
+            self.lbl_training   = self.labels[:train]
+            self.lbl_vaidation  = self.labels[train:valid]
+            self.lbl_test       = self.labels[valid:test]
+
     def read_tsp_file(self, file, config):
         def normalize(dataset, feature_independant):
             highx = highy = -sys.maxsize

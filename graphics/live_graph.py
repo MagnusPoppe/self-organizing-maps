@@ -74,25 +74,32 @@ class LiveGrid(Graph):
         self.figure.clear()
 
         colors, labels = self.map_colors(grid)
+
         pos = dict(zip(self.graph.nodes(), self.graph.nodes()))
+        labels = {index: label for label, index in zip(labels, pos.keys())}
         ordering = [(y, dims[0] - 1 - x) for y in range(dims[0]) for x in range(dims[1])]
 
         nx.draw_networkx(
             self.graph,
             with_labels=False,
-            pos=pos,
             node_size=750,
+            pos=pos,
             ordering=ordering,
             node_color=colors
         )
+        nx.draw_networkx_labels(self.graph, pos=pos, labels=labels, font_size=8, font_family='avenir')
 
         self.figure.canvas.draw()
         PLT.pause(0.1)
 
-    def map_colors(self, grid):
+    def map_colors(self, grid, greyscale=True):
         colors, labels = [], []
         for y in range(len(grid)):
             for x in range(len(grid[y])):
-                colors += [self.grid_color_map[grid[y][x]]]
+                if greyscale:
+                    intensity = (grid[y][x]+2) / 12
+                    colors += [(intensity, intensity, 1, 0.87)]
+                else:
+                    colors += [self.grid_color_map[grid[y][x]]]
                 labels += [str(grid[y][x]) if grid[y][x] >= 0 else "?"]
         return colors, labels

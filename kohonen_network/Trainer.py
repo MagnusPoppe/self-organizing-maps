@@ -25,15 +25,14 @@ class Trainer():
         elif self.config.visuals:
             self.graph = LiveGrid(self.config.title)
 
-        print("Setup complete!\n")
-        print("NumExpr info:\ncores=%d\nthreads=%d\nVML Version=%s" % (ne.ncores, ne.nthreads, ne.get_vml_version()))
+        print("Setup complete!")
+        print("System info:\ncores=%d\nthreads=%d\nVML Version=%s" % (ne.ncores, ne.nthreads, ne.get_vml_version()))
 
     @timer("Training")
     def train(self):
-        print("Starting training")
         # Running random cases for a number of epochs:
         for epoch in range(1, self.config.epochs):
-            for case in range(len(self.config.casemanager.dataset)):
+            for case in range(len(self.config.casemanager.training)):
 
                 # Adjusting parameters:
                 learning_rate = calc.exponential_decay(epoch, self.config.learning_rate, self.config.learning_rate_decay)
@@ -52,10 +51,21 @@ class Trainer():
                     actual = list(zip(self.neurons[0], self.neurons[1]))
                     self.graph.update(actuals=actual + [actual[0]], targets=self.network.inputs)
                 else:
-                    drawn = self.network.drawable()
+                    drawn = self.network.toMatrix(self.network.get_value_mapping())
                     self.graph.update(self.network.grid_size, drawn)
             if epoch % self.config.printout_rate == 0:
-                print("Current state: \n\tSigma:         %f \n\tLearning rate: %f\n" % (sigma, learning_rate))
+                res = self.test(self.config.casemanager.vaidation, self.config.casemanager.lbl_vaidation, "Validation")
+                print("Epoch %d: \n\tSigma:         %f \n\tLearning rate: %f\n%s" % (epoch,sigma,learning_rate,res))
+
+
+    def test(self, cases, labels, test_type):
+        trained_neurons = self.network.get_value_mapping()
+        correct = 0
+        for case, label in zip(cases, labels):
+            bmu = self.bmu(case, self.neurons)
+            if trained_neurons[bmu] == label:
+                correct += 1
+        return "\t%s accuracy: %f %s (%d/%d)\n" %(test_type, correct/len(cases)*100, "%", correct, len(cases))
 
     @timer("Organize map")
     def organize_map(self, input, case, sigma, learning_rate):
@@ -70,9 +80,13 @@ class Trainer():
             self.network.winnerlist[bmu] += [case]
 
         neighbourhood = self.network.neighbourhood(sigma, bmu, len(self.neurons))
-        neurons = self.neurons
-        self.neurons = ne.evaluate('neurons + (neighbourhood * learning_rate * (inn - neurons))')
-        # self.neurons = self.neurons + (neighbourhood * learning_rate * (inn - self.neurons))
+
+        # CALCULATE USING NumPY:
+        self.neurons = self.neurons + (neighbourhood * learning_rate * (inn - self.neurons))
+
+        # CALCULATE USING NumExpr
+        # neurons = self.neurons
+        # self.neurons = ne.evaluate('neurons + (neighbourhood * learning_rate * (inn - neurons))')
 
     def bmu(self, inputs, nodes):
         out = np.array([])

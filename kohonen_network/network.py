@@ -94,53 +94,21 @@ class Network2D(Network):
             output += [ np.random.uniform(*self.config.random_range, size=(len(self.inputs[0]) * self.config.multiplier))]
         return output
 
-    def drawable(self):
-        matrix = []
-        for i in range(len(self.winnerlist)):
-
-            # Creating the histogram:
-            histogram = [0]*10
-            for entry in self.winnerlist[i]:
-                histogram[ self.config.casemanager.labels[entry] ] += 1
-
-            # Finding the correct value for (x,y)
-            if i % np.sqrt(len(self.winnerlist)) == 0: matrix.append([-1]*int(np.sqrt(len(self.winnerlist))))
-            y, x = int(i // np.sqrt(len(self.winnerlist))), int(i % np.sqrt(len(self.winnerlist)))
-            if any(e > 0 for e in histogram):
-                matrix[y][x] = histogram.index(max(histogram))
-
+    def toMatrix(self, vector):
+        n = len(vector)
+        sq = int(np.sqrt(n))
+        matrix = [[-1]*sq for i in range(sq)]
+        for i in range(n):
+            # y, x = i // sq, int(i % sq)
+            matrix[i // sq][i % sq] = vector[i]
         return matrix
-    #
-    # def parallel_bmu(self, input, nodes):
-    #     # Setup:
-    #     result = [None]
-    #     processes = int(multiprocessing.cpu_count()/2)
-    #     tasks_per_proc = int(len(nodes) / processes)
-    #     tasks = [(input, nodes[i*tasks_per_proc:(i+1)*tasks_per_proc]) for i in range(processes)]
-    #
-    #     # Spawning processes:
-    #     pool = multiprocessing.Pool(processes=processes-1)
-    #     pool.map_async(
-    #         func=self.shortest_distance,
-    #         iterable=tasks[:-1],
-    #         callback=self.callback(result, tasks_per_proc),
-    #         error_callback=lambda x: print(x))
-    #
-    #     i, v = self.shortest_distance(tasks[-1])
-    #
-    #     # Waiting for sync
-    #     while result[0] is None: pass
-    #     pool.terminate()
-    #
-    #     ii, vv = result[0]
-    #     return i if v < vv else ii
-    #
-    # def callback(self, result, no_tasks):
-    #     def gather_bmu(results):
-    #         best_value, best_index= sys.maxsize, -1
-    #         for i, res in enumerate(results):
-    #             index, value = res
-    #             if value < best_value: best_index, best_value = index, value
-    #         result[0] = best_index, best_value # THIS VALUE IS SENT TO THE MAIN PROCESS.
-    #
-    #     return gather_bmu
+
+    def get_value_mapping(self):
+        # Creating the histogram:
+        output = []
+        for i in range(len(self.winnerlist)):
+            histogram = [0] * 10
+            for entry in self.winnerlist[i]:
+                histogram[self.config.casemanager.labels[entry]] += 1
+            output += [histogram.index(max(histogram)) if any(e > 0 for e in histogram) else -1]
+        return output
