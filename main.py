@@ -25,6 +25,7 @@ def run(file):
         print_time_averages()
         if config.accuracy_testing:
             print(trainer.test(config.casemanager.test, config.casemanager.lbl_test, "Test"), end="\n")
+            print(trainer.test(config.casemanager.training, config.casemanager.lbl_training, "Training"), end="\n")
 
 if __name__ == '__main__':
     # Setup:

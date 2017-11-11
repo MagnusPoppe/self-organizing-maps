@@ -1,19 +1,20 @@
 {
     "dataset": {
         "file": "mnist",
-        "fraction": 0.01,
+        "fraction": 0.025,
         "epochs":1000,
         "accuracy tests": true,
         "test rate (per epoch)": 10,
         "neighbourhood": {
-            "initial": 5,
+            "initial": 1,
             "decay": 25,
-            "function": ""
+            "function": "exponential decay"
         },
         "learning rate": {
             "initial": 0.75,
             "decay": 100,
-            "function": ""
+            "time constant": 1000,
+            "function": "power series"
         }
     },
     "random range": [0,1],
