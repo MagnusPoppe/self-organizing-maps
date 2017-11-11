@@ -1,7 +1,7 @@
-import tkinter
 import time
+import tkinter
 
-from decorators import timer
+from features.decorators import timer
 
 
 class Grid():

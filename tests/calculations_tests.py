@@ -5,7 +5,7 @@ from time import sleep
 class TestDecayingFunctions(unittest.TestCase):
 
     def test_linear_decay(self):
-        from calculations import linear_decay
+        from features.calculations import linear_decay
 
         test_sigmas = [1,  5,  10,  105]
         test_lambdas = [-0.00005, -0.75, -1, -10]
@@ -19,14 +19,14 @@ class TestDecayingFunctions(unittest.TestCase):
 
             self.assertEqual(expected_value, actual, "The function returned unexpected value...")
             self.assertTrue( actual < sigma, "the value did not decay. (actual: %f < sigma: %f" %(actual, sigma))
-        from live_graph import LiveGraph
+        from graphics.live_graph import LiveGraph
         g = LiveGraph("linear_decay")
         g.update(graph_coords, None)
         sleep(5)
 
 
     def test_exponential_decay(self):
-        from calculations import exponential_decay
+        from features.calculations import exponential_decay
 
         test_sigmas = [1,  5,  10,  105]
         test_lambdas = [0.00005, 0.75, 1, 10]
@@ -39,7 +39,7 @@ class TestDecayingFunctions(unittest.TestCase):
 
             self.assertEqual(expected_value, actual, "The function returned unexpected value...")
             self.assertTrue( actual < sigma, "the value did not decay. (actual: %f < sigma: %f" %(actual, sigma))
-        from live_graph import LiveGraph
+        from graphics.live_graph import LiveGraph
         g = LiveGraph("exponential_decay")
         g.update(graph_coords, None)
         sleep(5)

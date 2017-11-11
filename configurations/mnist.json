@@ -16,7 +16,7 @@
     },
     "random range": [0,1],
     "node multiplier": 1,
-    "neurons": [7,7],
+    "neurons": [10, 10],
     "normalize": {
         "use": true,
         "feature independant": true

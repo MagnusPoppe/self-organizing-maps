@@ -1,11 +1,12 @@
-import random
-
 import multiprocessing
-import numpy as np
+import random
 import sys
 
-import calculations as calc
-from configuration import Configuration
+import numpy as np
+
+from features import calculations as calc
+from kohonen_network.configuration import Configuration
+
 
 class Network():
     def __init__(self, configuration: Configuration):

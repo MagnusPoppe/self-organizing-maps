@@ -1,7 +1,8 @@
 import matplotlib.pyplot as PLT
 import networkx as nx
 
-from decorators import timer
+from features.decorators import timer
+
 
 class Graph():
 
@@ -68,19 +69,30 @@ class LiveGrid(Graph):
     @timer("Grid update")
     def update(self, dims, grid):
         if not self.graph:
-            self.graph = nx.grid_graph([dims[0],dims[1]])
+            self.graph = nx.grid_2d_graph(dims[0],dims[1])
 
         self.figure.clear()
 
-        colors = self.map_colors(grid)
-        nx.spring_layout(self.graph)
-        nx.draw(self.graph, node_color=colors)
+        colors, labels = self.map_colors(grid)
+        pos = dict(zip(self.graph.nodes(), self.graph.nodes()))
+        ordering = [(y, dims[0] - 1 - x) for y in range(dims[0]) for x in range(dims[1])]
+
+        nx.draw_networkx(
+            self.graph,
+            with_labels=False,
+            pos=pos,
+            node_size=750,
+            ordering=ordering,
+            node_color=colors
+        )
+
         self.figure.canvas.draw()
         PLT.pause(0.1)
 
     def map_colors(self, grid):
-        colors = []
+        colors, labels = [], []
         for y in range(len(grid)):
             for x in range(len(grid[y])):
                 colors += [self.grid_color_map[grid[y][x]]]
-        return colors
+                labels += [str(grid[y][x]) if grid[y][x] >= 0 else "?"]
+        return colors, labels

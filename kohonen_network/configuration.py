@@ -1,6 +1,6 @@
 import json
 
-from case_manager import CaseManager
+from kohonen_network.case_manager import CaseManager
 
 
 class Configuration():

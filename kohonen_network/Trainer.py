@@ -1,11 +1,13 @@
-import numpy as np
+import features.calculations as calc
 import numexpr as ne
+import numpy as np
+from graphics.grid import Grid
+from graphics.live_graph import LiveGrid
+from kohonen_network.network import Network1D, Network2D
 
-from configuration import Configuration
-from decorators import timer
-from grid import Grid
-from network import Network1D, Network2D
-import calculations as calc
+from features.decorators import timer
+from kohonen_network.configuration import Configuration
+
 
 class Trainer():
 
@@ -17,11 +19,11 @@ class Trainer():
         self.neurons = self.network.neurons
 
         if self.config.visuals and isinstance(self.network, Network1D):
-            from live_graph import LiveGraph
+            from graphics.live_graph import LiveGraph
             self.graph  = LiveGraph(self.config.title, "x", "y")
 
         elif self.config.visuals:
-            self.graph = Grid(title=self.config.title, speed=0)
+            self.graph = LiveGrid(self.config.title)
 
         print("Setup complete!\n")
         print("NumExpr info:\ncores=%d\nthreads=%d\nVML Version=%s" % (ne.ncores, ne.nthreads, ne.get_vml_version()))
@@ -51,7 +53,7 @@ class Trainer():
                     self.graph.update(actuals=actual + [actual[0]], targets=self.network.inputs)
                 else:
                     drawn = self.network.drawable()
-                    self.graph.update(drawn)
+                    self.graph.update(self.network.grid_size, drawn)
             if epoch % self.config.printout_rate == 0:
                 print("Current state: \n\tSigma:         %f \n\tLearning rate: %f\n" % (sigma, learning_rate))
 
@@ -68,15 +70,14 @@ class Trainer():
             self.network.winnerlist[bmu] += [case]
 
         neighbourhood = self.network.neighbourhood(sigma, bmu, len(self.neurons))
-        # neurons = self.neurons
-        # self.neurons = ne.evaluate('neurons + (neighbourhood * learning_rate * (inn - neurons))')
-        self.neurons = self.neurons + (neighbourhood * learning_rate * (inn - self.neurons))
+        neurons = self.neurons
+        self.neurons = ne.evaluate('neurons + (neighbourhood * learning_rate * (inn - neurons))')
+        # self.neurons = self.neurons + (neighbourhood * learning_rate * (inn - self.neurons))
 
     def bmu(self, inputs, nodes):
         out = np.array([])
         for weights in nodes:
-            data = np.subtract(inputs, weights)
-            data = np.power(data, 2)
-            data = np.sqrt(np.sum(data))
-            out = np.append(out, [data])
+            distance = (inputs-weights)**2
+            distance = np.sqrt(np.sum(distance))
+            out = np.append(out, [distance])
         return np.argmin(out)
