@@ -1,7 +1,15 @@
 import json
 
 from kohonen_network.case_manager import CaseManager
+from features import calculations as calc
 
+def select_decay(function_name):
+    if   function_name == "exponential decay":  return calc.exponential_decay
+    elif function_name == "power series":       return calc.power_series_learning_rate_adjust
+    elif function_name == "linear decay":       return calc.linear_decay
+    elif function_name == "inverse of time":    return calc.inverse_of_time_learning_rate_adjust
+    elif function_name == "linear time decay":  return calc.linear_learning_rate_adjust
+    else: raise ValueError("Illegal decay function \"%s\"" % function_name)
 
 class Configuration():
 
@@ -12,10 +20,11 @@ class Configuration():
         # Decay function parameters:
         self.initial_neighbourhood   = config["dataset"]["neighbourhood"]["initial"]
         self.neighbourhood_decay     = config["dataset"]["neighbourhood"]["decay"]
-        self.neighbourhood_function  = config["dataset"]["neighbourhood"]["function"]
+        self.neighbourhood_function  = select_decay(config["dataset"]["neighbourhood"]["function"])
         self.learning_rate           = config["dataset"]["learning rate"]["initial"]
         self.learning_rate_decay     = config["dataset"]["learning rate"]["decay"]
-        self.learning_rate_function  = config["dataset"]["learning rate"]["function"]
+        self.learning_rate_function  = select_decay(config["dataset"]["learning rate"]["function"])
+
 
         # Network parameters:
         self.epochs                  = config["dataset"]["epochs"]
@@ -32,6 +41,8 @@ class Configuration():
         except KeyError:             pass
         try: self.accuracy_testing   = config["dataset"]["accuracy tests"]
         except KeyError:             self.accuracy_testing = False
+        try: self.test_rate          = config["dataset"]["test rate (per epoch)"]
+        except KeyError:             self.test_rate = 1
 
         # User interface:
         self.title                   = config["visuals"]["title"]

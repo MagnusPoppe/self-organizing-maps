@@ -1,7 +1,6 @@
 import features.calculations as calc
 import numexpr as ne
 import numpy as np
-from graphics.grid import Grid
 from graphics.live_graph import LiveGrid
 from kohonen_network.network import Network1D, Network2D
 
@@ -32,31 +31,25 @@ class Trainer():
     def train(self):
         # Running random cases for a number of epochs:
         for epoch in range(1, self.config.epochs):
+            # Adjusting parameters:
+            learning_rate = self.config.learning_rate_function(
+                epoch,
+                self.config.learning_rate,
+                self.config.learning_rate_decay,
+                self.config.epochs)
+            sigma = self.config.neighbourhood_function(
+                epoch,
+                self.config.initial_neighbourhood,
+                self.config.neighbourhood_decay,
+                self.config.epochs)
+
+            # Running the self organizing map algorithm:
             for case in range(len(self.config.casemanager.training)):
-
-                # Adjusting parameters:
-                learning_rate = calc.exponential_decay(epoch, self.config.learning_rate, self.config.learning_rate_decay)
-                sigma = calc.exponential_decay(epoch, self.config.initial_neighbourhood, self.config.neighbourhood_decay)
-
-                # Getting input for this run.
                 case, input = self.network.random_input()
-
-                # Running the self organizing map algorithm:
                 self.organize_map(input, case, sigma, learning_rate)
 
-
             # Displaying visuals if system is configured to do so.
-            if self.config.visuals and epoch % self.config.visuals_refresh_rate == 0:
-                if self.config.dataset != "mnist":
-                    actual = list(zip(self.neurons[0], self.neurons[1]))
-                    self.graph.update(actuals=actual + [actual[0]], targets=self.network.inputs)
-                else:
-                    drawn = self.network.toMatrix(self.network.get_value_mapping())
-                    self.graph.update(self.network.grid_size, drawn)
-            if epoch % self.config.printout_rate == 0:
-                res = self.test(self.config.casemanager.vaidation, self.config.casemanager.lbl_vaidation, "Validation")
-                print("Epoch %d: \n\tSigma:         %f \n\tLearning rate: %f\n%s" % (epoch,sigma,learning_rate,res))
-
+            self.report_to_user(epoch, sigma, learning_rate)
 
     def test(self, cases, labels, test_type):
         trained_neurons = self.network.get_value_mapping()
@@ -65,7 +58,7 @@ class Trainer():
             bmu = self.bmu(case, self.neurons)
             if trained_neurons[bmu] == label:
                 correct += 1
-        return "\t%s accuracy: %f %s (%d/%d)\n" %(test_type, correct/len(cases)*100, "%", correct, len(cases))
+        return "%s accuracy: %f %s (%d/%d)" %(test_type, correct/len(cases)*100, "%", correct, len(cases))
 
     @timer("Organize map")
     def organize_map(self, input, case, sigma, learning_rate):
@@ -91,7 +84,24 @@ class Trainer():
     def bmu(self, inputs, nodes):
         out = np.array([])
         for weights in nodes:
-            distance = (inputs-weights)**2
-            distance = np.sqrt(np.sum(distance))
-            out = np.append(out, [distance])
+            data = np.subtract(inputs, weights)
+            data = np.power(data, 2)
+            data = np.sqrt(np.sum(data))
+            out = np.append(out, [data])
         return np.argmin(out)
+
+    @timer("User feedback")
+    def report_to_user(self, epoch, sigma, learning_rate):
+        if self.config.visuals and epoch % self.config.visuals_refresh_rate == 0:
+            if self.config.dataset != "mnist":
+                actual = list(zip(self.neurons[0], self.neurons[1]))
+                self.graph.update(actuals=actual + [actual[0]], targets=self.network.inputs)
+            else:
+                drawn = self.network.toMatrix(self.network.get_value_mapping())
+                self.graph.update(self.network.grid_size, drawn)
+        if epoch % self.config.printout_rate == 0:
+            print("Epoch %d: \n\tSigma:         %f \n\tLearning rate: %f" % (epoch, sigma, learning_rate))
+        if self.config.accuracy_testing and epoch % self.config.test_rate == 0:
+            res = self.test(self.config.casemanager.vaidation, self.config.casemanager.lbl_vaidation, "Validation")
+            print("\t%s" % res)
+        print()

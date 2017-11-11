@@ -1,5 +1,4 @@
 import sys
-
 import numpy as np
 
 
@@ -23,6 +22,8 @@ class CaseManager():
             self.lbl_training   = self.labels[:train]
             self.lbl_vaidation  = self.labels[train:valid]
             self.lbl_test       = self.labels[valid:test]
+        else:
+            self.training       = self.dataset
 
     def read_tsp_file(self, file, config):
         def normalize(dataset, feature_independant):

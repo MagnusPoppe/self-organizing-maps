@@ -5,12 +5,12 @@
         "neighbourhood": {
             "initial": 8,
             "decay": 10,
-            "function": "exponential_decay"
+            "function": "exponential decay"
         },
         "learning rate": {
             "initial": 0.8,
             "decay": 500,
-            "function": ""
+            "function": "exponential decay"
         }
     },
     "random range": [0, 1.0],

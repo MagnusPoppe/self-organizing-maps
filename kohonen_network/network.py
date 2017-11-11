@@ -1,7 +1,4 @@
-import multiprocessing
 import random
-import sys
-
 import numpy as np
 
 from features import calculations as calc
@@ -23,7 +20,6 @@ class Network():
         index = random.choice(self.remaining)
         self.remaining.remove(index)
         return index, self.inputs[index]
-
     def generate_input_vectors(self, dataset): pass
     def initialize(self): pass
 
@@ -46,14 +42,6 @@ class Network1D(Network):
         return out
 
     def initialize(self):
-        """
-        Initializing the weight matrix. Weights are created using the following structure:
-        self.weights contains nodes up to number of outputs
-            features containing one node for each input
-                feature containing a random value.
-        :return: the weight matrix
-        """
-        import numpy as np
         output = []
         for i in range(self.config.features):
             output += [np.random.uniform(*self.config.random_range, size=len(self.inputs) * self.config.multiplier)]
@@ -85,7 +73,6 @@ class Network2D(Network):
             out = np.reshape(out, (len(out), 1))
 
         return out
-
 
     def initialize(self):
         import numpy as np

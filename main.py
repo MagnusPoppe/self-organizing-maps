@@ -14,11 +14,17 @@ def run(file):
     try:
         trainer.train()
     except KeyboardInterrupt as e:
-        print("User cancelled the program.")
+        print("User cancelled the program.", end="\n")
     finally:
         if config.visuals:
             import matplotlib.pyplot as plt
             plt.close("all")
+
+        # Print statistics
+        print_time_totals()
+        print_time_averages()
+        if config.accuracy_testing:
+            print(trainer.test(config.casemanager.test, config.casemanager.lbl_test, "Test"), end="\n")
 
 if __name__ == '__main__':
     # Setup:
@@ -32,7 +38,3 @@ if __name__ == '__main__':
 
     # Running the neural network.
     run(file)
-
-    # Print statistics
-    print_time_totals()
-    print_time_averages()
