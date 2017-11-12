@@ -11,7 +11,8 @@
             "initial": 0.8,
             "decay": 500,
             "function": "exponential decay"
-        }
+        },
+        "optimal_distance": 10628
     },
     "random range": [0, 1.0],
     "node multiplier": 2,

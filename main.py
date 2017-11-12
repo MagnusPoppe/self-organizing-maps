@@ -1,9 +1,6 @@
 import sys
-
 from kohonen_network.Trainer import Trainer
-
-from features.decorators import timer, instanciate_globals, print_time_averages, print_time_totals, \
-    table_print_time_dict
+from features.decorators import timer, instanciate_globals, print_time_averages, print_time_totals
 from kohonen_network.configuration import Configuration
 
 
@@ -24,9 +21,12 @@ def run(file):
         print_time_totals()
         print_time_averages()
         if config.accuracy_testing:
-            print(trainer.test(config.casemanager.test, config.casemanager.lbl_test, "Test"), end="\n")
-            print(trainer.test(config.casemanager.training, config.casemanager.lbl_training, "Training"), end="\n")
-
+            t = trainer.test_accuracy(config.casemanager.test_accuracy, config.casemanager.lbl_test, "Test")
+            j = trainer.test_accuracy(config.casemanager.training, config.casemanager.lbl_training, "Training")
+            print("\nEnd of run testing:\n\t%s\n\t%s" %(t,j))
+        else:
+            # TESTING FOR THE TSP TOTAL DISTANCE
+            pass
 if __name__ == '__main__':
     # Setup:
 

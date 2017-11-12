@@ -1,5 +1,7 @@
 import json
 
+import os
+
 from kohonen_network.case_manager import CaseManager
 from features import calculations as calc
 
@@ -55,3 +57,19 @@ class Configuration():
         self.features                = 0
         self.normalized_by           = None
         self.casemanager             = CaseManager(self.dataset, self)
+
+        if not "mnist" in self.dataset:
+            def find_magic_number(digits=2) -> tuple:
+                for i in range(digits, 0, -1):
+                    if os.path.basename(self.dataset)[0:i].isdigit():
+                        return int(os.path.basename(self.dataset)[0:i]), i
+                else: raise ValueError("Unknown dataset...")
+
+            number, digits = find_magic_number()
+            with open("datasets/TSP/Optimal Value.txt", "r") as f:
+                for line in f.readlines():
+                    problem, distance = line.split(":")
+                    if problem[-digits:].isdigit() and int(problem[-digits:]) == number:
+                        self.optimal_distance = int(distance)
+                        break
+                else: raise EOFError("Optimal distance not found before end of file.")

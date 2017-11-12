@@ -51,15 +51,6 @@ class Trainer():
             # Displaying visuals if system is configured to do so.
             self.report_to_user(epoch, sigma, learning_rate)
 
-    def test(self, cases, labels, test_type):
-        trained_neurons = self.network.get_value_mapping()
-        correct = 0
-        for case, label in zip(cases, labels):
-            bmu = self.bmu(case, self.neurons)
-            if trained_neurons[bmu] == label:
-                correct += 1
-        return "%s accuracy: %f %s (%d/%d)" %(test_type, correct/len(cases)*100, "%", correct, len(cases))
-
     @timer("Organize map")
     def organize_map(self, input, case, sigma, learning_rate):
         inn = np.array(input, ndmin=2)
@@ -102,6 +93,18 @@ class Trainer():
         if epoch % self.config.printout_rate == 0:
             print("Epoch %d: \n\tSigma:         %f \n\tLearning rate: %f" % (epoch, sigma, learning_rate))
         if self.config.accuracy_testing and epoch % self.config.test_rate == 0:
-            res = self.test(self.config.casemanager.vaidation, self.config.casemanager.lbl_vaidation, "Validation")
+            res = self.test_accuracy(self.config.casemanager.vaidation, self.config.casemanager.lbl_vaidation, "Validation")
             print("\t%s" % res)
         print()
+
+    def test_accuracy(self, cases, labels, test_type):
+        trained_neurons = self.network.get_value_mapping()
+        correct = 0
+        for case, label in zip(cases, labels):
+            bmu = self.bmu(case, self.neurons)
+            if trained_neurons[bmu] == label:
+                correct += 1
+        return "%s accuracy: %f %s (%d/%d)" %(test_type, correct/len(cases)*100, "%", correct, len(cases))
+
+    def test_distance(self, expected):
+        pass
