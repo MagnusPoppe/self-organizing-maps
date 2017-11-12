@@ -36,16 +36,19 @@ class CaseManager():
             if not feature_independant:
                 highx = highy = max(highx, highy)
 
-            for data in dataset:
-                data[1] = data[1] / highx
-                data[2] = data[2] / highy
-            self.normalized_by = highx, highy
+            for i in range(len(dataset)):
+                dataset[i][1] = dataset[i][1] / highx
+                dataset[i][2] = dataset[i][2] / highy
+
+            config.normalized_by = (highx, highy)
             return dataset
         config.features = 2
         dataset = []
         with open(file, "r") as f:
-            cities = f.readline()
-            config.nodes = int(cities.split(":")[1])
+            name = f.readline().split(":")[1]
+            type = f.readline().split(":")[1]
+            config.nodes = int(f.readline().split(":")[1])
+            skip = f.readline().split(":")[1]
             heading = f.readline().strip("\n")
             if heading == "NODE_COORD_SECTION":
 
@@ -55,11 +58,11 @@ class CaseManager():
                     line = f.readline().strip("\n").split(" ")
                     dataset += [[int(line[0]), float(line[1]), float(line[2])]]
 
-
                 if f.readline().strip("\n") != "EOF":
                     raise Exception("Failed to interpret dataset...")
 
         if config.normalize:
+            self.original = np.copy(dataset)
             dataset = normalize(dataset, config.normalization_mode)
         return dataset
 

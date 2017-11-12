@@ -1,0 +1,8 @@
+Problem 1: 7542
+Problem 2: 6110
+Problem 3: 629
+Problem 4: 22068
+Problem 5: 14379
+Problem 6: 108159
+Problem 7: 59030
+Problem 8: 1211

@@ -66,7 +66,7 @@ class Configuration():
                 else: raise ValueError("Unknown dataset...")
 
             number, digits = find_magic_number()
-            with open("datasets/TSP/Optimal Value.txt", "r") as f:
+            with open("datasets/TSP/Optimal Values.txt", "r") as f:
                 for line in f.readlines():
                     problem, distance = line.split(":")
                     if problem[-digits:].isdigit() and int(problem[-digits:]) == number:

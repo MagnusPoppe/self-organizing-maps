@@ -18,7 +18,7 @@
     "node multiplier": 2,
     "normalize": {
         "use": true,
-        "feature independant": false
+        "feature independant": true
     },
     "visuals": {
         "on": true,

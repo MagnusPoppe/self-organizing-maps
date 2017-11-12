@@ -26,7 +26,7 @@ def run(file):
             print("\nEnd of run testing:\n\t%s\n\t%s" %(t,j))
         else:
             # TESTING FOR THE TSP TOTAL DISTANCE
-            pass
+            trainer.test_distance(config.optimal_distance)
 if __name__ == '__main__':
     # Setup:
 
