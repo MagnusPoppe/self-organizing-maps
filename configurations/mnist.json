@@ -1,7 +1,7 @@
 {
     "dataset": {
         "file": "mnist",
-        "fraction": 0.025,
+        "fraction": 0.02,
         "epochs":1000,
         "accuracy tests": true,
         "test rate (per epoch)": 10,
@@ -19,7 +19,7 @@
     },
     "random range": [0,1],
     "node multiplier": 1,
-    "neurons": [10, 10],
+    "neurons": [12, 12],
     "normalize": {
         "use": true,
         "feature independant": true

@@ -21,15 +21,16 @@ def run(file):
         print_time_totals()
         print_time_averages()
         if config.accuracy_testing:
-            t = trainer.test_accuracy(config.casemanager.test_accuracy, config.casemanager.lbl_test, "Test")
+            t = trainer.test_accuracy(config.casemanager.test, config.casemanager.lbl_test, "Test")
             j = trainer.test_accuracy(config.casemanager.training, config.casemanager.lbl_training, "Training")
             print("\nEnd of run testing:\n\t%s\n\t%s" %(t,j))
         else:
             # TESTING FOR THE TSP TOTAL DISTANCE
             trainer.test_distance(config.optimal_distance)
-if __name__ == '__main__':
-    # Setup:
 
+if __name__ == '__main__':
+
+    # Setup:
     for arg in sys.argv:
         if "TSP" in arg.upper() or "MNIST" in arg.upper():
             file = arg

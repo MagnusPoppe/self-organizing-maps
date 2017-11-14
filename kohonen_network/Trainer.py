@@ -95,6 +95,8 @@ class Trainer():
         if self.config.accuracy_testing and epoch % self.config.test_rate == 0:
             res = self.test_accuracy(self.config.casemanager.vaidation, self.config.casemanager.lbl_vaidation, "Validation")
             print("\t%s" % res)
+            res = self.test_accuracy(self.config.casemanager.training, self.config.casemanager.lbl_training, "Training")
+            print("\t%s" % res)
         print()
 
     def test_accuracy(self, cases, labels, test_type):
@@ -109,63 +111,50 @@ class Trainer():
     def test_distance(self, expected):
         def find_closest_cities():
             cities = []
-            for lat, lng in zip(self.neurons[0], self.neurons[1]):
+            for cx, cy in self.network.inputs:
                 distance = np.array([])
-                for otherlat, otherlng in self.network.inputs:
-                    distance = np.append(distance,np.sqrt(np.power((otherlat-lat), 2) + np.power((otherlng-lng), 2)))
-                cities += [(np.argmin(distance), min(distance))]
+                for nx, ny in zip(self.neurons[0], self.neurons[1]):
+                    distance = np.append(distance, np.sqrt(np.power((nx-cx), 2) + np.power((ny-cy), 2)))
+                cities += [np.argmin(distance)]
             return cities
 
         def create_city_tour(cities):
-            city_tour = []
-            for city, distance in cities:
-                for othercity, otherdistance in cities:
-                    if city == othercity and distance > otherdistance:
-                        break
-                else: city_tour += [city]
-            return city_tour
+            import sys
+            priority = []
+            for x in range(len(self.network.inputs)):
+                city = np.argmin(cities)
+                cities[city] = sys.maxsize
+                priority.append(city)
+            return priority
 
         def validate(city_tour) -> bool:
-            all_cities = list(range(0, self.config.nodes))
+            all_cities = list(range(0, len(self.network.inputs)))
             perfect = True
             for city in city_tour:
+                if city == -1: continue
+
                 if all_cities[city] == -1:
                     print("DUPLICATE CITY. CITY %d VISITED TWICE!" % city)
                     perfect = False
-                else: all_cities[city] = -1
+                else:
+                    all_cities[city] = -1
             if any(x > -1 for x in all_cities):
                 print("SALESMAN DID NOT VISIT ALL CITIES.")
                 perfect = False
             return perfect
 
-        city_tour = create_city_tour(find_closest_cities())
-        if not validate(city_tour):
-            pass
+        close = find_closest_cities()
+        city_tour = create_city_tour(close)
+        validate(city_tour)
 
         distance = 0
-        for index in city_tour:
-            city, prevlat, prevlng  = self.config.casemanager.original[index-1]
-            city, lat, lng          = self.config.casemanager.original[index]
-            p1 = np.power( lat - prevlat , 2)
-            p2 = np.power( lng - prevlng , 2)
+        previous = city_tour[0]
+        for index in city_tour[1:]:
+            prev_city, px, py = self.config.casemanager.original[previous]
+            city, x, y = self.config.casemanager.original[index]
+            p1 = np.power( y - py, 2)
+            p2 = np.power( x - px, 2)
             distance += np.sqrt( p1 + p2 )
-        print("TOTAL DISTANCE: %f (optimal: %d)" % (distance, expected))
-        print("Percent of optimal: %f %s" % (float(distance)/float(expected)*100, "%"))
-
-        # visited = []
-        #
-        # for lat, lng in zip(self.neurons[0], self.neurons[1]):
-        #     # Scaling up to real coordinates:
-        #     for i, latlng in enumerate(self.network.inputs):
-        #         actual_lat, actual_lng = latlng
-        #         if lat == actual_lat and lng == actual_lng:
-        #             visited += [i]
-        #
-        # distance = 0
-        # for index in visited:
-        #     city, prevlat, prevlng  = self.config.casemanager.original[index-1]
-        #     city, lat, lng          = self.config.casemanager.original[index]
-        #     distance += np.power((prevlat-lat), 2) + np.power((prevlng-lng), 2)
-        # total_distance = np.sqrt(distance)
-        # print("TOTAL DISTANCE: %f (optimal: %d)" % (total_distance, expected))
-        # print("Percent of optimal: %f %s" % (float(total_distance)/float(expected)*100, "%"))
+            previous = index
+        print("Total distance: %f / %d)" % (round(distance,2), expected))
+        print("Deviation from optimal solution: %f %s" % ( abs( float(distance)/float(expected)*100 - 100) , "%"))
