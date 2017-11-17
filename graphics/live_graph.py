@@ -67,39 +67,45 @@ class LiveGrid(Graph):
         ]
 
     @timer("Grid update")
-    def update(self, dims, grid):
+    def update(self, dims, grid, bmu):
         if not self.graph:
             self.graph = nx.grid_2d_graph(dims[0],dims[1])
+            self.pos = dict(zip(self.graph.nodes(), self.graph.nodes()))
 
         self.figure.clear()
 
-        colors, labels = self.map_colors(grid)
+        colors, labels = self.map_colors(grid, bmu, greyscale=True)
 
-        pos = dict(zip(self.graph.nodes(), self.graph.nodes()))
-        labels = {index: label for label, index in zip(labels, pos.keys())}
+        labels = {index: label for label, index in zip(labels, self.pos.keys())}
         ordering = [(y, dims[0] - 1 - x) for y in range(dims[0]) for x in range(dims[1])]
 
         nx.draw_networkx(
             self.graph,
             with_labels=False,
             node_size=750,
-            pos=pos,
+            pos=self.pos,
             ordering=ordering,
             node_color=colors
         )
-        nx.draw_networkx_labels(self.graph, pos=pos, labels=labels, font_size=8, font_family='avenir')
+        nx.draw_networkx_labels(self.graph, pos=self.pos, labels=labels, font_size=8, font_family='Avenir')
 
         self.figure.canvas.draw()
         PLT.pause(0.1)
 
-    def map_colors(self, grid, greyscale=True):
+    def map_colors(self, grid, bmu, greyscale=True):
         colors, labels = [], []
         for y in range(len(grid)):
             for x in range(len(grid[y])):
-                if greyscale:
-                    intensity = (grid[y][x]+2) / 12
+
+                intensity = (grid[y][x] + 2) / 12
+                if y*len(grid[y])+x == bmu:
+                    colors += [(0.4, 1, 0.4, 0.87)]
+                elif grid[y][x] < 0:
+                    colors += [(0.0, 0.0, 0.0, 1)]
+                elif greyscale:
                     colors += [(intensity, intensity, 1, 0.87)]
                 else:
                     colors += [self.grid_color_map[grid[y][x]]]
+
                 labels += [str(grid[y][x]) if grid[y][x] >= 0 else "?"]
         return colors, labels

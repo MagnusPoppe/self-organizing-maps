@@ -2,6 +2,7 @@ import sys
 from kohonen_network.Trainer import Trainer
 from features.decorators import timer, instanciate_globals, print_time_averages, print_time_totals
 from kohonen_network.configuration import Configuration
+from shell_commands.listener import listen
 
 
 @timer("Total time: ")
@@ -9,7 +10,7 @@ def run(file):
     config = Configuration(file)
     trainer = Trainer( config )
     try:
-        trainer.train()
+        trainer.train( stop=config.epochs )
     except KeyboardInterrupt as e:
         print("User cancelled the program.", end="\n")
     finally:
@@ -20,13 +21,10 @@ def run(file):
         # Print statistics
         print_time_totals()
         print_time_averages()
-        if config.accuracy_testing:
-            t = trainer.test_accuracy(config.casemanager.test, config.casemanager.lbl_test, "Test")
-            j = trainer.test_accuracy(config.casemanager.training, config.casemanager.lbl_training, "Training")
-            print("\nEnd of run testing:\n\t%s\n\t%s" %(t,j))
-        else:
-            # TESTING FOR THE TSP TOTAL DISTANCE
-            trainer.test_distance(config.optimal_distance)
+
+        # Running tests:
+        trainer.run_all_tests()
+        return trainer
 
 if __name__ == '__main__':
 
@@ -35,8 +33,9 @@ if __name__ == '__main__':
         if "TSP" in arg.upper() or "MNIST" in arg.upper():
             file = arg
             break
-
     instanciate_globals()
 
     # Running the neural network.
-    run(file)
+    controller = run(file)
+
+    listen(controller)

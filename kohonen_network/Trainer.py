@@ -13,24 +13,24 @@ class Trainer():
     def __init__(self, configuration: Configuration):
 
         self.config = configuration
-        if configuration.dataset == "mnist": self.network = Network2D(configuration)
-        else:                                self.network = Network1D(configuration)
+        if configuration.dataset == "mnist":
+            self.network = Network2D(configuration)
+        else:
+            self.network = Network1D(configuration)
         self.neurons = self.network.neurons
+        self.total_epochs = 0
 
         if self.config.visuals and isinstance(self.network, Network1D):
             from graphics.live_graph import LiveGraph
             self.graph  = LiveGraph(self.config.title, "x", "y")
-
         elif self.config.visuals:
             self.graph = LiveGrid(self.config.title)
 
-        print("Setup complete!")
-        print("System info:\ncores=%d\nthreads=%d\nVML Version=%s" % (ne.ncores, ne.nthreads, ne.get_vml_version()))
-
     @timer("Training")
-    def train(self):
+    def train(self, start=1, stop=100):
         # Running random cases for a number of epochs:
-        for epoch in range(1, self.config.epochs):
+        bmu=0
+        for epoch in range(start, stop):
             # Adjusting parameters:
             learning_rate = self.config.learning_rate_function(
                 epoch,
@@ -46,10 +46,14 @@ class Trainer():
             # Running the self organizing map algorithm:
             for case in range(len(self.config.casemanager.training)):
                 case, input = self.network.random_input()
-                self.organize_map(input, case, sigma, learning_rate)
+                bmu = self.organize_map(input, case, sigma, learning_rate)
 
             # Displaying visuals if system is configured to do so.
-            self.report_to_user(epoch, sigma, learning_rate)
+            self.report_to_user(epoch, sigma, learning_rate, bmu)
+        self.total_epochs += stop - start
+
+    def train_more(self, epochs):
+        self.train(self.total_epochs+1, epochs + self.total_epochs+2)
 
     @timer("Organize map")
     def organize_map(self, input, case, sigma, learning_rate):
@@ -64,13 +68,8 @@ class Trainer():
             self.network.winnerlist[bmu] += [case]
 
         neighbourhood = self.network.neighbourhood(sigma, bmu, len(self.neurons))
-
-        # CALCULATE USING NumPY:
         self.neurons = self.neurons + (neighbourhood * learning_rate * (inn - self.neurons))
-
-        # CALCULATE USING NumExpr
-        # neurons = self.neurons
-        # self.neurons = ne.evaluate('neurons + (neighbourhood * learning_rate * (inn - neurons))')
+        return bmu
 
     def bmu(self, inputs, nodes):
         out = np.array([])
@@ -82,14 +81,15 @@ class Trainer():
         return np.argmin(out)
 
     @timer("User feedback")
-    def report_to_user(self, epoch, sigma, learning_rate):
+    def report_to_user(self, epoch, sigma, learning_rate, bmu):
         if self.config.visuals and epoch % self.config.visuals_refresh_rate == 0:
             if self.config.dataset != "mnist":
                 actual = list(zip(self.neurons[0], self.neurons[1]))
                 self.graph.update(actuals=actual + [actual[0]], targets=self.network.inputs)
             else:
                 drawn = self.network.toMatrix(self.network.get_value_mapping())
-                self.graph.update(self.network.grid_size, drawn)
+                self.graph.update(self.network.grid_size, drawn, bmu)
+
         if epoch % self.config.printout_rate == 0:
             print("Epoch %d: \n\tSigma:         %f \n\tLearning rate: %f" % (epoch, sigma, learning_rate))
         if self.config.accuracy_testing and epoch % self.config.test_rate == 0:
@@ -98,6 +98,14 @@ class Trainer():
             res = self.test_accuracy(self.config.casemanager.training, self.config.casemanager.lbl_training, "Training")
             print("\t%s" % res)
         print()
+
+    def run_all_tests(self):
+        if self.config.dataset == "mnist":
+            t = self.test_accuracy(self.config.casemanager.test, self.config.casemanager.lbl_test, "Test")
+            v = self.test_accuracy(self.config.casemanager.test, self.config.casemanager.lbl_test, "Validation")
+            j = self.test_accuracy(self.config.casemanager.training, self.config.casemanager.lbl_training, "Training")
+            print("\nTesting all: \n\t%s\n\t%s\n\t%s" %(t,v,j))
+        else: print(self.test_distance(self.config.optimal_distance))
 
     def test_accuracy(self, cases, labels, test_type):
         trained_neurons = self.network.get_value_mapping()

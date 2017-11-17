@@ -13,8 +13,8 @@
             "function": "exponential decay"
         }
     },
-    "node multiplier": 3,
-    "random range": [0,1],
+    "node multiplier": 8,
+    "random range": [0.45, 0.55],
     "normalize": {
         "use": true,
         "feature independant": true

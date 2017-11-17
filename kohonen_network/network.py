@@ -20,6 +20,7 @@ class Network():
         index = random.choice(self.remaining)
         self.remaining.remove(index)
         return index, self.inputs[index]
+    
     def generate_input_vectors(self, dataset): pass
     def initialize(self): pass
 
