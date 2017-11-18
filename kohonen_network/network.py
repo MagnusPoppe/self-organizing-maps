@@ -44,8 +44,38 @@ class Network1D(Network):
 
     def initialize(self):
         output = []
-        for i in range(self.config.features):
-            output += [np.random.uniform(*self.config.random_range, size=len(self.inputs) * self.config.multiplier)]
+        if self.config.placement_type == "random":
+            for i in range(self.config.features):
+                output += [np.random.uniform(*self.config.random_range, size=len(self.inputs)*self.config.multiplier)]
+        elif self.config.placement_type == "circle":
+            origoX = origoY = 0.5
+            radius = 0.25
+            output = [[],[]]
+            for angle in range(0,360):
+                output[0] += [ origoX + radius * np.cos(angle * ( np.pi / 180 )) ]
+                output[1] += [ origoY + radius * np.sin(angle * ( np.pi / 180 )) ]
+        elif self.config.placement_type == "line":
+            half = (len(self.inputs) * self.config.multiplier)/2
+            output = [
+                [(1 / half) * x for x in list(range(int(half)+1)) + list(reversed(range(int(half))))],
+                [0.5]*len(self.inputs) * self.config.multiplier
+            ]
+        elif self.config.placement_type == "box":
+            sqrt = (len(self.inputs) * self.config.multiplier) / 4
+            output = [[],[]]
+            # top:
+            output [0] += [(1 / sqrt) * x for x in list(range(int(sqrt)))]
+            output [1] += [0] * int(sqrt)
+            # right:
+            output [0] += [1] * int(sqrt)
+            output [1] += [(1 / sqrt) * x for x in list(range(int(sqrt)))]
+            # bottom:
+            output [0] += [(1 / sqrt) * x for x in list(reversed(range(int(sqrt))))]
+            output [1] += [1] * int(sqrt)
+            # left:
+            output [0] += [0] * int(sqrt)
+            output [1] += [(1 / sqrt) * x for x in list(reversed(range(int(sqrt))))]
+        else: raise ValueError("Parameter placement type did not match any known placement type.")
         return output
 
 

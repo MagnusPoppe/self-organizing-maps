@@ -2,7 +2,7 @@
     "dataset": {
         "file": "mnist",
         "fraction": 0.02,
-        "epochs":50,
+        "epochs":65,
         "accuracy tests": true,
         "test rate (per epoch)": 10,
         "neighbourhood": {

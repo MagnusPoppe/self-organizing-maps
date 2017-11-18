@@ -8,7 +8,7 @@ class Graph():
 
     def __init__(self, graph_title, x_title="", y_title="", x_range=None, y_range=None):
         self.figure = PLT.figure(figsize=(10, 7.5), dpi=100)
-        # self.figure.suptitle(graph_title)
+        self.figure.suptitle(graph_title)
         self.figure.canvas.set_window_title(graph_title)
         PLT.xlabel(x_title)
         PLT.ylabel(y_title)
@@ -25,8 +25,6 @@ class LiveGraph(Graph):
         super().__init__(graph_title, x_title, y_title, x_range, y_range)
         self.actual_graph = None
         self.target_graph = None
-        PLT.grid()
-
 
     @timer("Graph update")
     def update(self, actuals, targets, upscale=None):
@@ -38,7 +36,7 @@ class LiveGraph(Graph):
 
     def plot(self, histogram, graph, marker=".", line_style="-", invert=False, upscale=None):
         yl, xl = [], []
-        if len(histogram[0]) == 1:histogram = [ x[0] for x in histogram]
+        if len(histogram[0]) == 1: histogram = [ x[0] for x in histogram]
         for x, y in histogram:
             xl.append(x if not upscale else x*upscale[0])
             yl.append(y if not upscale else x*upscale[1])

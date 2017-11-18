@@ -34,6 +34,8 @@ class Configuration():
         self.multiplier              = config["node multiplier"]
         try: self.grid               = (config["neurons"][0], config["neurons"][1])
         except KeyError:             pass
+        try: self.placement_type     = config["initialization type"]
+        except KeyError:             self.placement_type = "random"
 
         # Case setup:
         self.dataset                 = config["dataset"]["file"]
