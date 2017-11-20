@@ -5,7 +5,7 @@ import numpy as np
 class CaseManager():
 
     def __init__(self, file, config):
-        if "TSP" in file:     self.dataset = self.read_tsp_file(file, config)
+        if "Demo" in file:     self.dataset = self.read_tsp_file(file, config)
         elif "mnist" in file: self.dataset = self.read_mnist(config)
         else: raise Exception("Unknown case...")
 

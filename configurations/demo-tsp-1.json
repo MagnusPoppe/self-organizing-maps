@@ -1,21 +1,22 @@
 {
     "dataset": {
-        "file": "datasets/TSP/5.txt",
-        "epochs":100,
+        "file": "datasets/Demo Data/1.txt",
+        "epochs":75,
         "neighbourhood": {
             "initial": 10,
             "decay": 10,
             "function": "exponential decay"
         },
         "learning rate": {
-            "initial": 0.6,
+            "initial": 0.8,
             "decay": 500,
             "function": "exponential decay"
-        }
+        },
+        "optimal_distance": 10628
     },
-    "node multiplier": 3,
-    "random range": [0,1],
-    "initialization type": "box",
+        "initialization type": "circle",
+    "random range": [0, 1.0],
+    "node multiplier": 2,
     "normalize": {
         "use": true,
         "feature independant": true

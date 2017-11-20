@@ -1,6 +1,6 @@
 {
     "dataset": {
-        "file": "datasets/TSP/10.txt",
+        "file": "datasets/Demo Data/4.txt",
         "epochs":100,
         "neighbourhood": {
             "initial": 18,
@@ -15,7 +15,6 @@
     },
     "node multiplier": 3,
     "random range": [0,1],
-    "initialization type": "circle",
     "normalize": {
         "use": true,
         "feature independant": true

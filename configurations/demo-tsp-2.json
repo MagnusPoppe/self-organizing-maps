@@ -1,9 +1,9 @@
 {
     "dataset": {
-        "file": "datasets/TSP/10.txt",
-        "epochs":100,
+        "file": "datasets/Demo Data/2.txt",
+        "epochs":75,
         "neighbourhood": {
-            "initial": 18,
+            "initial": 10,
             "decay": 10,
             "function": "exponential decay"
         },
@@ -11,11 +11,11 @@
             "initial": 0.8,
             "decay": 500,
             "function": "exponential decay"
-        }
+        },
+        "optimal_distance": 10628
     },
-    "node multiplier": 3,
-    "random range": [0,1],
-    "initialization type": "circle",
+    "random range": [0, 1.0],
+    "node multiplier": 2,
     "normalize": {
         "use": true,
         "feature independant": true

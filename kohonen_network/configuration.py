@@ -61,11 +61,12 @@ class Configuration():
         self.casemanager             = CaseManager(self.dataset, self)
 
         if not "mnist" in self.dataset:
-            def find_magic_number(digits=2) -> tuple:
+            def find_magic_number(digits=1) -> tuple:
                 for i in range(digits, 0, -1):
                     if os.path.basename(self.dataset)[0:i].isdigit():
                         return int(os.path.basename(self.dataset)[0:i]), i
-                else: raise ValueError("Unknown dataset...")
+                else:
+                    raise ValueError("Unknown dataset...")
 
             number, digits = find_magic_number()
             with open("datasets/TSP/Optimal Values.txt", "r") as f:

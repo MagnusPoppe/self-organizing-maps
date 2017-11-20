@@ -15,6 +15,7 @@
     },
     "node multiplier": 3,
     "random range": [0,1],
+    "initialization type": "circle",
     "normalize": {
         "use": true,
         "feature independant": true
